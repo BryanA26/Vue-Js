@@ -15,7 +15,7 @@ const options = {
 };
 
 
-fetch('http://10.1.1.8/api/', options)
+fetch('http://10.1.1.8/api/v1/terminaciones/', options)
   .then(response => response.json())
   .then(data => {
     console.log(data);
@@ -37,7 +37,7 @@ fetch('http://10.1.1.8/api/', options)
     <ul>
       <li v-for="api in apis" :key="api.index">
 
-        <router-link :to="`details/${api.index}`"> {{ api.nombres_apellidos }}</router-link>
+        <router-link :to="`/details/${api.index}`"> {{ api.nombres_apellidos }}</router-link>
         #{{ api.index }}
       </li>
     </ul>

@@ -1,14 +1,14 @@
-<script setup>
-
-</script>
 
 <template>
-  <div> 
-    <router-link to="/">Home</router-link>
-    <router-link to="/Details">Detalles</router-link>
+  <div id="app"> 
+    <router-link to="/crear">Crear</router-link>
+    |
+    <router-link to="/editar">Editar</router-link>
+    |
     <router-link to="/Listar">Listar</router-link>
+    <router-view></router-view>
   </div>
-  <router class="view"></router>
+  
 </template>
 
 
