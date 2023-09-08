@@ -11,17 +11,17 @@
 					<div class="form-floating">
 						<select class="form-select" id="floatingSelect" v-model="pqrs.tipo_doc" aria-label="Floating label select example">
 							<option selected>Selecciona el documento</option>
-							<option value="1">Cédula de Ciudadanía - CC</option>
-							<option value="2">Cédula de Extranjería - CE</option>
-							<option value="3">Pasaporte - PA</option>
+							<option value="CC">Cédula de Ciudadanía - CC</option>
+							<option value="CE">Cédula de Extranjería - CE</option>
+							<option value="PA">Pasaporte - PA</option>
 						</select>
 						<label for="floatingSelect">Tipo de Identificación *</label>
 					</div>
 
 					<div class="my-3">
 						<div class="input-group has-validation">
-							<div class="form-floating is-invalid">
-								<input type="text" class="form-control is-invalid" v-model="pqrs.identificacion" id="floatingInputGroup2" placeholder="documento" required>
+							<div class="form-floating ">
+								<input type="text" class="form-control" v-model="pqrs.identificacion" id="floatingInputGroup2" placeholder="documento" required>
 								<label for="floatingInputGroup2">Número de identificación</label>
 							</div>
 							<div class="invalid-feedback">
@@ -32,8 +32,8 @@
 
 					<div class="my-3">
 						<div class="input-group has-validation">
-							<div class="form-floating is-invalid">
-								<input type="text" class="form-control is-invalid" v-model="pqrs.nombres_apellidos" id="floatingInputGroup2" placeholder="nombre" required>
+							<div class="form-floating ">
+								<input type="text" class="form-control" v-model="pqrs.nombres_apellidos"  id="floatingInputGroup2" placeholder="nombre" required>
 								<label for="floatingInputGroup2">Nombres y Apellidos</label>
 							</div>
 							<div class="invalid-feedback">
@@ -44,8 +44,8 @@
 
 					<div class="my-3">
 						<div class="input-group has-validation">
-							<div class="form-floating is-invalid">
-								<input type="text" class="form-control is-invalid" v-model="pqrs.email" id="floatingInputGroup2" placeholder="email" required>
+							<div class="form-floating">
+								<input type="text" class="form-control" v-model="pqrs.email" id="floatingInputGroup2" placeholder="email" required>
 								<label for="floatingInputGroup2">Email</label>
 							</div>
 							<div class="invalid-feedback">
@@ -56,8 +56,8 @@
 
 					<div class="my-3">
 						<div class="input-group has-validation">
-							<div class="form-floating is-invalid">
-								<input type="text" class="form-control is-invalid" v-model="pqrs.tel" id="floatingInputGroup2" placeholder="tel" required>
+							<div class="form-floating">
+								<input type="text" class="form-control " v-model="pqrs.tel" id="floatingInputGroup2" placeholder="tel" required>
 								<label for="floatingInputGroup2">Teléfono o Celular</label>
 							</div>
 							<div class="invalid-feedback">
@@ -69,7 +69,7 @@
 					<div class="container">
 						<div class="mb-3">
 							<label for="textArea" class="form-label">Mensaje</label>
-							<textarea class="form-control" v-model="pqrs.mensaje" id="textArea" rows="3" maxlength="180"></textarea>
+							<textarea class="form-control" v-model="pqrs.mensaje"  id="textArea" rows="3" maxlength="180"></textarea>
 						</div>
 					</div>
 
@@ -95,30 +95,69 @@
 
 
 <script>
-const options = {
-	method: 'POST',
-	headers: {
-		'Content-Type': 'application/json',
-		'User-Agent': 'Insomnia/2023.5.6',
-		Authorization: import.meta.env.VITE_API_TOKEN
-	},
-	body: '{"tipo_doc":"","num_documento":"nombres_apellidos":"tel":"mensaje":"gdpr"}'
-};
+export default {
+	data() {
+		return {
+			pqrs: {
+				nombres_apellidos: "",
+				mensaje: "",
+			}
+		}
 
-fetch('http://10.1.1.8/api/v1/pqrs/', options)
-	.then(response => response.json())
-	.then(response => console.log(response))
-	.catch(err => console.error(err));
+	},
+
+
+	methods: {
+
+
+		crearPqr() {
+
+
+			this.pqrs.nombres_apellidos = this.pqrs.nombres_apellidos.toUpperCase();
+			this.pqrs.mensaje = this.pqrs.mensaje.toUpperCase();
+
+			console.log(this.pqrs);
+
+			let datosEnviar = {
+				tipo_doc: this.pqrs.tipo_doc,
+				identificacion: this.pqrs.identificacion,
+				nombres_apellidos: this.pqrs.nombres_apellidos,
+				email: this.pqrs.email,
+				tel: this.pqrs.tel,
+				mensaje: this.pqrs.mensaje,
+				gdpr: this.pqrs.gdpr,
+			};
+
+			const options = {
+				method: 'POST',
+				headers: {
+					'User-Agent': 'Insomnia/2023.5.6',
+					Authorization: import.meta.env.VITE_API_TOKEN
+				},
+				body: JSON.stringify(datosEnviar)
+			};
+
+			fetch('http://10.1.1.8/api/v1/pqrs/', options)
+
+				.then(respuesta => respuesta.json())
+				.then(datosRespuesta => {
+					console.log(datosRespuesta);
+					window.location.href = 'Listar';
+
+				})
+
+				.catch(error => {
+					console.error('Error al enviar la solicitud:', error);
+
+				});
+
+		}
+	}
+
+
+
+
+}
 </script>
 
 
-<!--
-let datosEnviar = {
-    tipo_doc:this.pqrs.tipo_doc,
-    num_documento:this.pqrs.num_documento,
-    nombres_apellidos:this.pqrs.nombres_apellidos,
-    email:this.pqrs.email,
-    tel:this.pqrs.tel,
-    mensaje:this.pqrs.mensaje,
-    gdpr:this.pqrs.gdpr
-}   -->
