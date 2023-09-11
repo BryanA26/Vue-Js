@@ -3,6 +3,7 @@ import Home from '../pages/Home.vue'
 import Details from '../pages/Details.vue'
 import Listar from '../pages/Listar.vue'
 import crear from '../pages/crear.vue'
+import editar from '../pages/editar.vue'
 
 const routes = [
 	{
@@ -24,7 +25,13 @@ const routes = [
 		path: '/crear/',
 		name: 'Crear',
 		component: crear
+	},
+	{
+		path: '/editar/:id',
+		name: 'Editar',
+		component: editar
 	}
+
 
 ]
 

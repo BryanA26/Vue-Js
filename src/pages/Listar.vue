@@ -2,7 +2,7 @@
 	<div class="container">
 		<div class="card">
 			<div class="card-header text-center">
-				PQRS
+				<b>PQRS</b>
 			</div>
 			<div class="card-body">
 				<table class="table">
@@ -13,6 +13,8 @@
 							<th scope="col">Identificación</th>
 							<th scope="col">Correo</th>
 							<th scope="col">Contacto</th>
+							<th scope="col">Estado</th>
+							<th scope="col">Área Encargada</th>
 							<th scope="col" colspan="2" class="text-center">Acciones</th>
 						</tr>
 					</thead>
@@ -23,11 +25,21 @@
 							<td scope="row">{{ api.identificacion }}</td>
 							<td scope="row">{{ api.email }}</td>
 							<td scope="row">{{ api.tel }}</td>
+							<td scope="row"><span class="badge text-bg-warning">{{ api.estado }}</span> </td>
+							<td scope="row"><b>{{ api.area_enc}}</b></td>
 							<td class="text-center">
-								<a name="" id="" class="btn btn-primary" href="#" role="button">Editar</a>
+								<div class="btn-group">
+									<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										Acciones
+									</button>
+									<div class="dropdown-menu">
+										<router-link :to="'/editar/' + api.id_pqrs" class="dropdown-item" href="#">Gestionar</router-link>
+										<a class="dropdown-item" href="#">Exportar PDF</a>
+									</div>
+								</div>
 							</td>
 							<td class="text-center">
-								<a name="" id="" class="btn btn-warning" href="#" role="button" data-bs-toggle="modal" data-bs-target="detallesModal" @click="abrirModal(api.index)">Detalles</a>
+								<a name="" id="" class="btn btn-primary" href="#" role="button" data-bs-toggle="modal" data-bs-target="detallesModal" @click="abrirModal(api.index)">Detalles</a>
 							</td>
 						</tr>
 					</tbody>
@@ -48,7 +60,7 @@
 					{{ apis[obj_index_position].mensaje }}
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="cerrarModal">Close</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="cerrarModal">Cerrar</button>
 				</div>
 			</div>
 		</div>
@@ -96,7 +108,7 @@ fetch('http://10.1.1.8/api/v1/pqrs/', options)
 				...element,
 				index: index + 1
 			};
-			state.apis.push(api);
+			state.apis.unshift(api);
 		});
 	})
 	.catch(error => {
@@ -106,3 +118,67 @@ fetch('http://10.1.1.8/api/v1/pqrs/', options)
 </script>
 
 
+<style>
+.container {
+	margin: auto;
+	max-width: 100%;
+	padding: 1.25rem;
+}
+
+.card {
+	border: 1px inset;
+	border-radius: 0.3125rem;
+	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+}
+
+.table {
+	width: 100%;
+	margin-bottom: 0;
+}
+
+.dropdown-item:hover {
+	background-color: #8cb3db;
+	/* Cambia el color de fondo al pasar el puntero */
+	color: #333;
+	/* Cambia el color del texto al pasar el puntero */
+}
+
+@media (max-width: 768px) {
+	.table thead {
+		display: none;
+	}
+
+	.table tbody tr {
+		display: block;
+		margin-bottom: 1.25rem;
+		border: 1px solid #ddd;
+		border-radius: 0.3125rem;
+	}
+
+	.table tbody td {
+		display: block;
+		text-align: left;
+	}
+
+	.table tbody td::before {
+		content: attr(data-label);
+		font-weight: bold;
+		display: block;
+	}
+
+	.boton {
+		margin: 1.25rem 0;
+		width: 100%;
+	}
+}
+
+@media (min-width: 769px) {
+	.table {
+		font-size: 0.875rem;
+	}
+
+	.boton {
+		margin-right: 0.625rem;
+	}
+}
+</style>

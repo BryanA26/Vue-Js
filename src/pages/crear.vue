@@ -10,7 +10,7 @@
 				<form v-on:submit.prevent="crearPqr">
 					<div class="form-floating">
 						<select class="form-select" id="floatingSelect" v-model="pqrs.tipo_doc" aria-label="Floating label select example">
-							<option selected>Selecciona el documento</option>
+							<option selected></option>
 							<option value="CC">Cédula de Ciudadanía - CC</option>
 							<option value="CE">Cédula de Extranjería - CE</option>
 							<option value="PA">Pasaporte - PA</option>
@@ -65,6 +65,24 @@
 							</div>
 						</div>
 					</div>
+
+					<div class="form-floating">
+								<select class="form-select" id="floatingSelect" v-model="pqrs.area_enc" aria-label="Floating label select example">
+									<option selected></option>
+									<option value="Administración">Administración</option>
+									<option value="Administraciones">Administraciones</option>
+									<option value="Arrendamientos">Arrendamientos</option>
+									<option value="Cartera">Cartera</option>
+									<option value="Contabilidad">Contabilidad</option>
+									<option value="Gestión Humana">Gestión Humana</option>
+									<option value="Jurídico">Jurídico</option>
+									<option value="Mantenimientos">Mantenimientos</option>
+									<option value="Recibimientos">Recibimientos</option>
+									<option value="Servicios Públicos">Servicios Públicos</option>
+									<option value="Ventas">Ventas</option>
+								</select>
+								<label for="floatingSelect">Área encargada</label>
+							</div>
 
 					<div class="container">
 						<div class="mb-3">
@@ -125,7 +143,10 @@ export default {
 				email: this.pqrs.email,
 				tel: this.pqrs.tel,
 				mensaje: this.pqrs.mensaje,
+				area_enc:this.pqrs.area_enc,
 				gdpr: this.pqrs.gdpr,
+				estado: "SIN GESTIONAR",
+
 			};
 
 			const options = {
