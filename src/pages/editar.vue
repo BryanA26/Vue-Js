@@ -10,32 +10,13 @@
 				<form v-on:submit.prevent="actualizarPqr">
 					<div class="row">
 						<div class="col-md-6">
-							<div class="form-floating">
-								<select class="form-select" id="floatingSelect" v-model="pqrs.area_enc" aria-label="Floating label select example">
-									<option selected></option>
-									<option value="Administración">Administración</option>
-									<option value="Administraciones">Administraciones</option>
-									<option value="Arrendamientos">Arrendamientos</option>
-									<option value="Cartera">Cartera</option>
-									<option value="Contabilidad">Contabilidad</option>
-									<option value="Gestión Humana">Gestión Humana</option>
-									<option value="Jurídico">Jurídico</option>
-									<option value="Mantenimientos">Mantenimientos</option>
-									<option value="Recibimientos">Recibimientos</option>
-									<option value="Servicios Públicos">Servicios Públicos</option>
-									<option value="Ventas">Ventas</option>
-								</select>
-								<label for="floatingSelect">Área encargada</label>
-							</div>
+							<selectS inputId="'floatingSelect'" :selected-value="pqrs.area_enc" :label="'Área encargada *'" :options="areaOptions" @update:select-value="pqrs.area_enc = $event" :editable="false" />
 						</div>
 
 						<div class="col-md-6">
-							<div class="">
-								<div class="input-group has-validation">
-									<div class="form-floating ">
-										<input type="text" class="form-control" v-model="pqrs.id_pqrs" id="floatingInputGroup2" placeholder="id" required readonly>
-										<label for="floatingInputGroup2" readonly>Número de Radicado</label>
-									</div>
+							<div class="input-group has-validation">
+								<div class="form-floating ">
+									<inputText type="text" inputId="floatingInputGroup1" v-model="pqrs.id_pqrs" placeholder="id" label="Número de Radicado" :editable="true" />
 								</div>
 							</div>
 						</div>
@@ -44,10 +25,8 @@
 							<div class="my-3">
 								<div class="input-group has-validation">
 									<div class="form-floating ">
-										<input type="text" class="form-control" v-model="pqrs.fecha_registro" id="floatingInputGroup2" placeholder="fecha" required readonly>
-										<label for="floatingInputGroup2">Fecha de registro</label>
+										<inputText type="text" inputId="floatingInputGroup1" v-model="pqrs.fecha_registro" placeholder="id" label="Número de Radicado" :editable="true" />
 									</div>
-
 								</div>
 							</div>
 						</div>
@@ -55,33 +34,21 @@
 						<div class="col-md-6">
 							<div class="my-3">
 								<div class="form-floating">
-									<select class="form-select" id="floatingSelect" v-model="pqrs.estado" aria-label="Floating label select example">
-										<option selected>SIN GESTIONAR</option>
-										<option>EN ESTUDIO</option>
-										<option>GESTIONADO</option>
-									</select>
-									<label for="floatingSelect">Estado</label>
+									<selectS inputId="'floatingSelect'" :selected-value="pqrs.estado" :label="'Estado *'" :options="estadOptions" @update:select-value="pqrs.estado = $event" :editable="true" />
 								</div>
 							</div>
 						</div>
 
 						<div class="col-md-6">
 							<div class="form-floating">
-								<select class="form-select" id="floatingSelect" v-model="pqrs.tipo_doc" aria-label="Floating label select example">
-									<option selected></option>
-									<option value="CC">Cédula de Ciudadanía - CC</option>
-									<option value="CE">Cédula de Extranjería - CE</option>
-									<option value="PA">Pasaporte - PA</option>
-								</select>
-								<label for="floatingSelect">Tipo de Identificación *</label>
+								<selectS inputId="'floatingSelect'" :selected-value="pqrs.tipo_doc" :label="'Área encargada *'" :options="docOptions" @update:select-value="pqrs.tipo_doc = $event" :editable="false" />
 							</div>
 						</div>
 
 						<div class="col-md-6">
 							<div class="input-group has-validation">
 								<div class="form-floating">
-									<input type="text" class="form-control " v-model="pqrs.identificacion" id="floatingInputGroup2" placeholder="Documento" required>
-									<label for="floatingInputGroup2">Identificación</label>
+									<inputText type="text" inputId="floatingInputGroup1" v-model="pqrs.identificacion" placeholder="Documento" label="Número de Identificación" :editable="true" />
 								</div>
 							</div>
 						</div>
@@ -90,8 +57,7 @@
 							<div class="my-3">
 								<div class="input-group has-validation">
 									<div class="form-floating">
-										<input type="text" class="form-control " v-model="pqrs.nombres_apellidos" id="floatingInputGroup2" placeholder="nombre" required>
-										<label for="floatingInputGroup2">Nombres y Apellidos</label>
+										<inputText type="text" inputId="floatingInputGroup1" v-model="pqrs.nombres_apellidos" placeholder="nombre" label="Nombres y Apellidos" :editable="true" />
 									</div>
 								</div>
 							</div>
@@ -112,8 +78,7 @@
 							<div class="">
 								<div class="input-group has-validation mx-auto">
 									<div class="form-floating">
-										<input type="text" class="form-control " v-model="pqrs.email" id="floatingInputGroup2" placeholder="email" required>
-										<label for="floatingInputGroup2">Email</label>
+										<inputText type="text" inputId="floatingInputGroup1" v-model="pqrs.email" placeholder="id" label="Correo Electrónico" :editable="true" />
 									</div>
 								</div>
 							</div>
@@ -150,7 +115,18 @@
 
 
 <script>
+import inputText from '../components/inputText.vue';
+import selectS from '../components/select-s.vue';
+import containerText from '../components/containerText.vue';
+
 export default {
+
+	components: {
+		inputText,
+		selectS,
+		containerText,
+	},
+
 	data() {
 		return {
 			pqrs: {
@@ -163,7 +139,36 @@ export default {
 				estado: "",
 				area_enc: ""
 
-			}
+			},
+
+			areaOptions: [
+				{ value: 'Administración', label: 'Administración' },
+				{ value: 'Administraciones', label: 'Administraciones' },
+				{ value: 'Arrendamientos', label: 'Arrendamientos' },
+				{ value: 'Cartera', label: 'Cartera' },
+				{ value: 'Contabilidad', label: 'Contabilidad' },
+				{ value: 'Gestión Humana', label: 'Gestión Humana' },
+				{ value: 'Jurídico', label: 'Jurídico' },
+				{ value: 'Mantenimientos', label: 'Mantenimientos' },
+				{ value: 'Recibimientos', label: 'Recibimientos' },
+				{ value: 'Servicios Públicos', label: 'Servicios Públicos' },
+				{ value: 'Tesorería', label: 'Tesorería' },
+				{ value: 'Ventas', label: 'Ventas' },
+
+			],
+
+			docOptions: [
+				{ value: 'CC', label: 'Cédula de Ciudadanía - CC' },
+				{ value: 'CE', label: 'Cédula de Extranjería - CE' },
+				{ value: 'PA', label: 'Pasaporte - PA' },
+				{ value: 'NIT', label: 'Número de Identificación Tributaria - NIT' },
+			],
+
+			estadOptions: [
+				{ value: 'SIN GESTIONAR', label: 'SIN GESTIONAR' },
+				{ value: 'EN ESTUDIO', label: 'EN ESTUDIO' },
+				{ value: 'GESTIONADO', label: 'GESTIONADO' },
+			]
 		}
 
 	},
@@ -176,7 +181,7 @@ export default {
 
 	methods: {
 
-		volver(){
+		volver() {
 			this.$router.push("/Listar")
 		},
 

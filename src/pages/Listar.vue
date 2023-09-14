@@ -26,7 +26,7 @@
 							<td scope="row">{{ api.email }}</td>
 							<td scope="row">{{ api.tel }}</td>
 							<td scope="row"><span class="badge text-bg-warning">{{ api.estado }}</span> </td>
-							<td scope="row"><b>{{ api.area_enc}}</b></td>
+							<td scope="row"><b>{{ api.area_enc }}</b></td>
 							<td class="text-center">
 								<div class="btn-group">
 									<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -39,41 +39,32 @@
 								</div>
 							</td>
 							<td class="text-center">
-								<a name="" id="" class="btn btn-primary" href="#" role="button" data-bs-toggle="modal" data-bs-target="detallesModal" @click="abrirModal(api.index)">Detalles</a>
+								<div class="btn-group"></div>
+								<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									Detalles
+								</button>
+								<div class="dropdown-menu">
+									<a name="" id="" class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="detallesModal" @click="abrirModal(api.mensaje)">Mensaje</a>
+
+									<a name="" id="" class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="detallesModal" @click="abrirModal(api.observaciones)">Observaciones</a>
+								</div>
 							</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
-
 		</div>
 	</div>
-
-	<div class="modal" id="detallesModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h1 class="modal-title fs-5" id="exampleModalLabel">Detalles</h1>
-					<button type="button" class="btn-close" @click="cerrarModal" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-				</div>
-				<div class="modal-body" v-if="apis[obj_index_position]">
-					{{ apis[obj_index_position].mensaje }}
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="cerrarModal">Cerrar</button>
-				</div>
-			</div>
-		</div>
-	</div>
+	<modalRespuesta :mensaje="detalles"></modalRespuesta>
 </template>
 
 
 
 <script setup>
-
-import { useRouter } from 'vue-router';
-const router = useRouter();
+import modalRespuesta from '../components/modalRespuesta.vue';
 import { reactive, toRefs, ref } from 'vue'
+
+
 const state = reactive({
 	apis: []
 })
@@ -85,17 +76,12 @@ const options = {
 		Authorization: import.meta.env.VITE_API_TOKEN
 	},
 }
-const obj_index_position = ref(undefined)
+const detalles = ref(undefined)
 // Método para abrir el modal
 const abrirModal = (index) => {
-	obj_index_position.value = index - 1
+	detalles.value = index
 	const modal = new bootstrap.Modal(document.getElementById('detallesModal'));
 	modal.show();
-};
-
-const cerrarModal = () => {
-	const modal = new bootstrap.Modal(document.getElementById('detallesModal'));
-	modal.hide();
 };
 
 
