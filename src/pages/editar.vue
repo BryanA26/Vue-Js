@@ -7,7 +7,7 @@
 
 			</div>
 			<div class="card-body my-2">
-				<form v-on:submit.prevent="actualizarPqr">
+				<form v-on:submit.prevent="prepareData">
 					<div class="row">
 						<div class="col-md-6">
 							<selectS inputId="'floatingSelect'" :selected-value="pqrs.area_enc" :label="'Área encargada *'" :options="areaOptions" @update:select-value="pqrs.area_enc = $event" :editable="false" />
@@ -67,8 +67,7 @@
 							<div class="my-3">
 								<div class="input-group has-validation">
 									<div class="form-floating">
-										<input type="text" class="form-control " v-model="pqrs.tel" id="floatingInputGroup2" placeholder="tel" required>
-										<label for="floatingInputGroup2">Número de contacto</label>
+										<inputText type="text" inputId="floatingInputGroup1" v-model="pqrs.tel" placeholder="tel" label="Número de contacto" :editable="true" />
 									</div>
 								</div>
 							</div>
@@ -88,16 +87,15 @@
 							<div class="col-md-6">
 								<div class="container">
 									<div class="mb-3">
-										<label for="textAreaMensaje" class="form-label">Mensaje</label>
-										<textarea class="form-control" v-model="pqrs.mensaje" id="textAreaMensaje" rows="3" maxlength="180" :readonly="true"></textarea>
+										<containerText inputId="textArea" label="Mensaje" :rows="3" :maxlength="180" :text-value="pqrs.mensaje" />
 									</div>
 								</div>
 							</div>
+
 							<div class="col-md-6">
-								<div class="container">
-									<div class="mb-3">
-										<label for="textAreaObservaciones" class="form-label">Observaciones</label>
-										<textarea class="form-control" v-model="pqrs.observaciones" id="textAreaObservaciones" rows="3" maxlength="180"></textarea>
+								<div class="mb-3">
+									<div class="container">
+										<containerText inputId="textArea" label="Observaciones" :rows="3" :maxlength="180" :text-value="pqrs.observaciones" @update:textValue="pqrs.observaciones = $event" />
 									</div>
 								</div>
 							</div>
@@ -106,7 +104,7 @@
 				</form>
 				<div class="text-center">
 					<button type="submit" class="btn btn-danger mx-2" @click="volver">Atras</button>
-					<button type="submit" class="btn btn-primary mx-2" @click="actualizarPqr">Actualizar</button>
+					<button type="submit" class="btn btn-primary mx-2" @click="prepareData">Actualizar</button>
 				</div>
 			</div>
 		</div>
@@ -114,144 +112,87 @@
 </template>
 
 
-<script>
+<script setup>
 import inputText from '../components/inputText.vue';
 import selectS from '../components/select-s.vue';
 import containerText from '../components/containerText.vue';
+import { ref, onMounted } from 'vue';
+import { cargarDatosPqr, actualizarPqr } from '../fetch.query';
+import { useRoute, useRouter } from 'vue-router';
 
-export default {
+const router = useRouter()
+const route = useRoute()
 
-	components: {
-		inputText,
-		selectS,
-		containerText,
-	},
+const pqrs = ref({
+	tipo_doc: "",
+	id_pqrs: "",
+	fecha_registro: "",
+	email: "",
+	tel: "",
+	mensaje: "",
+	estado: "",
+	area_enc: ""
+})
 
-	data() {
-		return {
-			pqrs: {
-				tipo_doc: "",
-				id_pqrs: "",
-				fecha_registro: "",
-				email: "",
-				tel: "",
-				mensaje: "",
-				estado: "",
-				area_enc: ""
+const areaOptions = ref([
+	{ value: 'Administración', label: 'Administración' },
+	{ value: 'Administraciones', label: 'Administraciones' },
+	{ value: 'Arrendamientos', label: 'Arrendamientos' },
+	{ value: 'Cartera', label: 'Cartera' },
+	{ value: 'Contabilidad', label: 'Contabilidad' },
+	{ value: 'Gestión Humana', label: 'Gestión Humana' },
+	{ value: 'Jurídico', label: 'Jurídico' },
+	{ value: 'Mantenimientos', label: 'Mantenimientos' },
+	{ value: 'Recibimientos', label: 'Recibimientos' },
+	{ value: 'Servicios Públicos', label: 'Servicios Públicos' },
+	{ value: 'Tesorería', label: 'Tesorería' },
+	{ value: 'Ventas', label: 'Ventas' },
 
-			},
+])
 
-			areaOptions: [
-				{ value: 'Administración', label: 'Administración' },
-				{ value: 'Administraciones', label: 'Administraciones' },
-				{ value: 'Arrendamientos', label: 'Arrendamientos' },
-				{ value: 'Cartera', label: 'Cartera' },
-				{ value: 'Contabilidad', label: 'Contabilidad' },
-				{ value: 'Gestión Humana', label: 'Gestión Humana' },
-				{ value: 'Jurídico', label: 'Jurídico' },
-				{ value: 'Mantenimientos', label: 'Mantenimientos' },
-				{ value: 'Recibimientos', label: 'Recibimientos' },
-				{ value: 'Servicios Públicos', label: 'Servicios Públicos' },
-				{ value: 'Tesorería', label: 'Tesorería' },
-				{ value: 'Ventas', label: 'Ventas' },
+const docOptions = ref([
+	{ value: 'CC', label: 'Cédula de Ciudadanía - CC' },
+	{ value: 'CE', label: 'Cédula de Extranjería - CE' },
+	{ value: 'PA', label: 'Pasaporte - PA' },
+	{ value: 'NIT', label: 'Número de Identificación Tributaria - NIT' },
+])
 
-			],
+const estadOptions = ref([
+	{ value: 'SIN GESTIONAR', label: 'SIN GESTIONAR' },
+	{ value: 'EN ESTUDIO', label: 'EN ESTUDIO' },
+	{ value: 'GESTIONADO', label: 'GESTIONADO' },
+])
 
-			docOptions: [
-				{ value: 'CC', label: 'Cédula de Ciudadanía - CC' },
-				{ value: 'CE', label: 'Cédula de Extranjería - CE' },
-				{ value: 'PA', label: 'Pasaporte - PA' },
-				{ value: 'NIT', label: 'Número de Identificación Tributaria - NIT' },
-			],
-
-			estadOptions: [
-				{ value: 'SIN GESTIONAR', label: 'SIN GESTIONAR' },
-				{ value: 'EN ESTUDIO', label: 'EN ESTUDIO' },
-				{ value: 'GESTIONADO', label: 'GESTIONADO' },
-			]
-		}
-
-	},
-
-	created() {
-		const id = this.$route.params.id
-		this.cargarDatosPqr(id);
-	},
-
-
-	methods: {
-
-		volver() {
-			this.$router.push("/Listar")
-		},
-
-		cargarDatosPqr(id) {
-
-			const options = {
-				method: 'GET',
-				headers: {
-					'User-Agent': 'Insomnia/2023.5.6',
-					Authorization: import.meta.env.VITE_API_TOKEN
-				},
-
-			};
-
-			fetch(`http://10.1.1.8/api/v1/pqrs/?id=${id}`, options)
-
-				.then(respuesta => respuesta.json())
-				.then(datosRespuesta => {
-					this.pqrs = datosRespuesta.data;
-					console.log(datosRespuesta.data)
-
-				})
-
-				.catch(error => {
-					console.error('Error al enviar la solicitud:', error);
-
-				});
-
-		},
-
-		actualizarPqr() {
-
-			let datosEnviar = {
-				id_pqrs: this.pqrs.id_pqrs,
-				nombres_apellidos: this.pqrs.nombres_apellidos,
-				tipo_doc: this.pqrs.tipo_doc,
-				identificacion: this.pqrs.identificacion,
-				email: this.pqrs.email,
-				tel: this.pqrs.tel,
-				observaciones: this.pqrs.observaciones,
-				area_enc: this.pqrs.area_enc,
-				estado: this.pqrs.estado
-
-			}
-
-			const url = `http://10.1.1.8/api/v1/pqrs/`;
-
-			const options = {
-				method: 'PUT',
-				headers: {
-					'User-Agent': 'Insomnia/2023.5.6',
-					Authorization: import.meta.env.VITE_API_TOKEN
-				},
-				body: JSON.stringify(datosEnviar)
-			};
-
-			fetch(url, options)
-				.then((respuesta) => respuesta.json())
-				.then((data) => {
-					console.log(data);
-					window.location.href = "/Listar";
-				})
-				.catch((error) => {
-					// Manejo de errores en caso de que la solicitud falle
-					console.error("Error al enviar la solicitud de actualización:", error);
-				});
-		}
-
-	}
+const created = async () => {
+	const id = route.params.id
+	pqrs.value = await cargarDatosPqr(id);
 }
+
+const volver = () => {
+	router.push('/Listar')
+}
+
+const prepareData = () => {
+	pqrs.value.observaciones = pqrs.value.observaciones.toUpperCase();
+	let datosEnviar = {
+		id_pqrs: pqrs.value.id_pqrs,
+		nombres_apellidos: pqrs.value.nombres_apellidos,
+		tipo_doc: pqrs.value.tipo_doc,
+		identificacion: pqrs.value.identificacion,
+		email: pqrs.value.email,
+		tel: pqrs.value.tel,
+		observaciones: pqrs.value.observaciones,
+		area_enc: pqrs.value.area_enc,
+		estado: pqrs.value.estado,
+		mensaje: pqrs.value.mensaje
+	}
+	actualizarPqr(datosEnviar)
+	router.push('/Listar')
+}
+
+onMounted(()=>{
+	created()
+})
 
 </script>
 

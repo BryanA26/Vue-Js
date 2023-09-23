@@ -14,7 +14,6 @@
 
 <script setup>
 
-
 const props = defineProps({
 		type: String,
 		inputId: String,

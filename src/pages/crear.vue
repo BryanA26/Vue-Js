@@ -29,16 +29,10 @@
 						<selectS inputId="'floatingSelect'" :selected-value="pqrs.area_enc" :label="'Área encargada *'" :options="areaOptions" @update:select-value="pqrs.area_enc = $event" :editable="true" />
 					</div>
 
-					<!-- <div class="container">
-						<div class="mb-3">
-							<label for="textArea" class="form-label">Mensaje</label>
-							<textarea class="form-control" v-model="pqrs.mensaje" id="textArea" rows="3" maxlength="180"></textarea>
-						</div>
-					</div> -->
 					<div class="container">
-						<ContainerText inputId="textArea" label="Mensaje" :rows="3" :maxlength="180" v-model="pqrs.mensaje" />
+						<ContainerText :textValue="pqrs.mensaje" inputId="textArea" label="Mensaje" :rows="3" :maxlength="180" @update:textValue="pqrs.mensaje = $event" />
 					</div>
-					
+
 					<div class="mb-3">
 						<label for="gdprCheck" class="form-label">GDPR</label>
 						<div class="form-check">
@@ -60,91 +54,73 @@
 </template>
 
 
-<script>
+<script setup>
 import ContainerText from '../components/containerText.vue';
 import InputText from '../components/inputText.vue';
 import selectS from '../components/select-s.vue';
+import { fetchPost } from '../fetch.query';
+import { useRouter } from 'vue-router';
+import { ref } from 'vue';
 
-export default {
-	components: {
-		InputText,
-		selectS,
-		ContainerText
-	},
 
-	data() {
-		return {
-			pqrs: {
-				identificacion: "",
-				nombres_apellidos: "",
-				mensaje: "",
-				tipo_doc: "",
-			},
 
-			docOptions: [
-				{ value: 'CC', label: 'Cédula de Ciudadanía - CC' },
-				{ value: 'CE', label: 'Cédula de Extranjería - CE' },
-				{ value: 'PA', label: 'Pasaporte - PA' },
-				{ value: 'NIT', label: 'Número de Identificación Tributaria - NIT' },
-			],
+const router = useRouter()
 
-			areaOptions: [
-				{ value: 'Administración', label: 'Administración' },
-				{ value: 'Administraciones', label: 'Administraciones' },
-				{ value: 'Arrendamientos', label: 'Arrendamientos' },
-				{ value: 'Cartera', label: 'Cartera' },
-				{ value: 'Contabilidad', label: 'Contabilidad' },
-				{ value: 'Gestión Humana', label: 'Gestión Humana' },
-				{ value: 'Jurídico', label: 'Jurídico' },
-				{ value: 'Mantenimientos', label: 'Mantenimientos' },
-				{ value: 'Recibimientos', label: 'Recibimientos' },
-				{ value: 'Servicios Públicos', label: 'Servicios Públicos' },
-				{ value: 'Tesorería', label: 'Tesorería' },
-				{ value: 'Ventas', label: 'Ventas' },
+const pqrs = ref({
+	tipo_doc: "",
+	identificacion: "",
+	nombres_apellidos: "",
+	email: "",
+	tel: "",
+	area_enc: "",
+	mensaje: "",
+	gdpr: false
+})
 
-			]
+const docOptions = ref([
+	{ value: 'CC', label: 'Cédula de Ciudadanía - CC' },
+	{ value: 'CE', label: 'Cédula de Extranjería - CE' },
+	{ value: 'PA', label: 'Pasaporte - PA' },
+	{ value: 'NIT', label: 'Número de Identificación Tributaria - NIT' },
+])
 
-		}
-	},
+const areaOptions = ref([
+	{ value: 'Administración', label: 'Administración' },
+	{ value: 'Administraciones', label: 'Administraciones' },
+	{ value: 'Arrendamientos', label: 'Arrendamientos' },
+	{ value: 'Cartera', label: 'Cartera' },
+	{ value: 'Contabilidad', label: 'Contabilidad' },
+	{ value: 'Gestión Humana', label: 'Gestión Humana' },
+	{ value: 'Jurídico', label: 'Jurídico' },
+	{ value: 'Mantenimientos', label: 'Mantenimientos' },
+	{ value: 'Recibimientos', label: 'Recibimientos' },
+	{ value: 'Servicios Públicos', label: 'Servicios Públicos' },
+	{ value: 'Tesorería', label: 'Tesorería' },
+	{ value: 'Ventas', label: 'Ventas' },
 
-	methods: {
-		crearPqr() {
-			this.pqrs.nombres_apellidos = this.pqrs.nombres_apellidos.toUpperCase();
-			this.pqrs.mensaje = this.pqrs.mensaje.toUpperCase();
+])
 
-			console.log(this.pqrs);
-			let datosEnviar = {
-				tipo_doc: this.pqrs.tipo_doc,
-				identificacion: this.pqrs.identificacion,
-				nombres_apellidos: this.pqrs.nombres_apellidos,
-				email: this.pqrs.email,
-				tel: this.pqrs.tel,
-				mensaje: this.pqrs.mensaje,
-				area_enc: this.pqrs.area_enc,
-				gdpr: this.pqrs.gdpr,
-				estado: "SIN GESTIONAR",
-			};
-			const options = {
-				method: 'POST',
-				headers: {
-					'User-Agent': 'Insomnia/2023.5.6',
-					Authorization: import.meta.env.VITE_API_TOKEN
-				},
-				body: JSON.stringify(datosEnviar)
-			};
-			fetch('http://10.1.1.8/api/v1/pqrs/', options)
-				.then(respuesta => respuesta.json())
-				.then(datosRespuesta => {
-					console.log(datosRespuesta);
-					window.location.href = 'Listar';
-				})
-				.catch(error => {
-					console.error('Error al enviar la solicitud:', error);
-				});
-		}
-	},
 
+const crearPqr = async () => {
+	pqrs.value.nombres_apellidos = pqrs.value.nombres_apellidos.toUpperCase();
+	pqrs.value.mensaje = pqrs.value.mensaje.toUpperCase();
+
+	let datosEnviar = {
+		tipo_doc: pqrs.value.tipo_doc,
+		identificacion: pqrs.value.identificacion,
+		nombres_apellidos: pqrs.value.nombres_apellidos,
+		email: pqrs.value.email,
+		tel: pqrs.value.tel,
+		mensaje: pqrs.value.mensaje,
+		area_enc: pqrs.value.area_enc,
+		gdpr: pqrs.value.gdpr,
+		estado: "SIN GESTIONAR",
+	}
+	await fetchPost(datosEnviar)
+	router.push('/Listar')
 }
+
+
 </script>
 
 
