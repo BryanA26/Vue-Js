@@ -67,9 +67,8 @@ export function actualizarPqr(datosEnviar) {
 		});
 }
 
-export async function loadInitialData() {
-	const initialLoadAmount = 50;
-	const loading = { value: true }
+export async function loadInitialData(pagina = 1) {
+	const initialLoadAmount = 10;
 	const options = {
 		method: 'GET',
 		headers: {
@@ -78,22 +77,23 @@ export async function loadInitialData() {
 		},
 	};
 	try {
-		const response = await fetch(`http://10.1.1.8/api/v1/pqrs/?limit=${initialLoadAmount}`, options)
+		const response = await fetch(`http://10.1.1.8/api/v1/pqrs/?limit=${initialLoadAmount}&page=${pagina}`, options)
 		if (!response.ok) {
 			throw new Error(`Error en la solicitud: ${response.status} - ${response.statusText}`)
 		}
 		const responsejs = await response.json()
+		console.log("🚀 ~ file: fetch.query.js:85 ~ loadInitialData ~ responsejs:", responsejs)
 		return responsejs
 	} catch (error) {
 		console.error('Error al cargar los datos iniciales:', error);
-		
+
 		throw new Error('Hubo un problema al cargar los datos iniciales');
 	}
 
 }
 
 export function filterData(pagina) {
-	const itemsPerPage = 50;
+	const itemsPerPage = 10;
 	const options = {
 		method: 'GET',
 		headers: {

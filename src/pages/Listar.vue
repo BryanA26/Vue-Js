@@ -68,9 +68,14 @@
 
 				</tbody>
 			</table>
+			<div v-if="isLoading" class="spinner-row">
+				<div class="d-flex justify-content-center align-items-center h-100">
+					<div class="spinner-border" role="status">
+						<span class="visually-hidden">Cargando</span>
+					</div>
+				</div>
+			</div>
 		</div>
-
-		<!-- <vue-awesome-paginate :total-items="totalItems" :items-per-page="itemsPerPage" v-model="pagina" :totalPages="totalPages" :on-click="cargarDatosPagina" /> -->
 	</div>
 	<modalRespuesta :mensaje="detalles"></modalRespuesta>
 </template>
@@ -79,14 +84,14 @@
 
 <script setup>
 import modalRespuesta from '../components/modalRespuesta.vue';
-import { reactive, ref, onMounted, computed } from 'vue'
-import { loadInitialData, filterData } from '../fetch.query';
+import { reactive, ref, onMounted, onUnmounted, computed } from 'vue'
+import { loadInitialData } from '../fetch.query';
 
 const loadedData = ref([]);
-const loading = ref(false);
+const isLoading = ref(false);
+const pagina = ref(1);
 
-const totalItems = ref(0);
-const totalPages = ref(0);
+const totalPages = ref(1);
 const filterText = ref("");
 const showSearch = ref(false)
 
@@ -114,26 +119,41 @@ const filterApi = computed(() => {
 
 })
 
-
-
 const toggleSearch = () => {
 	showSearch.value = !showSearch.value
 }
 
-const state = reactive({
-	apis: []
-})
+const moreData = async () => {
 
-const datosIniciales = async () => {
-	loadedData.value = [];
+	if (pagina.value <= totalPages.value) {
+		isLoading.value = true;
+		const newData = await loadInitialData(pagina.value);
 
-	const data = await loadInitialData();
-	console.log("🚀 ~ file: Listar.vue:131 ~ datosIniciales ~ data:", data)
-	loadedData.value.push(...data.data)
-	totalItems.value = data.rows.total_rows;
-	totalPages.value = data.rows.pages;
-}
+		if (newData.rows.pages !== totalPages.value) {
+			totalPages.value = newData.rows.pages;
+		}
 
+		loadedData.value = [...loadedData.value, ...newData.data];
+		isLoading.value = false;
+
+		pagina.value++;
+	}
+};
+
+
+const loadMoreOnScroll = () => {
+	const container = document.querySelector('.container');
+
+	if (container.scrollTop + container.clientHeight >= container.scrollHeight && !isLoading.value) {
+		moreData();
+	}
+
+};
+
+const searchOnServer = () => {
+
+	cargarDatosPagina();
+};
 
 
 const detalles = ref(undefined)
@@ -144,61 +164,32 @@ const abrirModal = (index) => {
 	modal.show();
 };
 
-
-const searchOnServer = () => {
-
-	cargarDatosPagina();
-};
-
 const cargarDatosPagina = () => {
 	if (pagina.value > totalPages.value)
 
 		return;
 }
 
-const filtro = async() => {
+onMounted(async () => {
 
-	const pagina = ref(1)
-	const data = await filterData(pagina.value)
-	console.log("🚀 ~ file: Listar.vue:162 ~ filtro ~ data:", data)
-	if (data.data && data.data.length > 0) {
+	await moreData();
 
-		const nuevosRegistros = data.data.filter(registro => {
-			return !loadedData.value.some(existing => existing.id_pqrs === registro.id_pqrs);
-		});
 
-		loadedData.value = [...loadedData.value, ...nuevosRegistros];
-
-		if (data.total_rows !== totalItems.value) {
-			totalItems.value = data.total_rows;
+	window.addEventListener('scroll', e => {
+		if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && !isLoading.value) {
+			moreData();
 		}
 
-		if (data.pages !== totalPages.value) {
-			totalPages.value = data.pages;
-		}
-
-		pagina.value++;
-
-	}
-}
+	})
+});
 
 
-onMounted(async() => {
-	await datosIniciales();
-	filtro();
+onUnmounted(() => {
 
-})
+	window.removeEventListener('scroll', moreData);
+});
 
-// const loadMoreOnScroll = () => {
-// 	const container = document.querySelector('.container');
-// 	if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
-// 		if (pagina.value < totalPages) {
-// 			pagina.value++;
-// 			cargarDatosPagina();
-// 		}
-// 	}
 
-// };
 </script>
 
 
@@ -283,6 +274,19 @@ onMounted(async() => {
 .search-input {
 	display: flex;
 	align-items: center;
+}
+
+thead {
+	position: sticky;
+	top: 0;
+	background-color: #fff;
+	z-index: 1;
+}
+
+/* Estilos para la fila del spinner */
+.spinner-row {
+	height: 60px;
+	/* Ajusta la altura según tus necesidades */
 }
 
 @media (max-width: 768px) {
