@@ -4,6 +4,7 @@ import Details from '../pages/Details.vue'
 import Listar from '../pages/Listar.vue'
 import crear from '../pages/crear.vue'
 import editar from '../pages/editar.vue'
+import Exportar	from '../pages/exportPDF.vue'
 
 const routes = [
 	{
@@ -30,6 +31,11 @@ const routes = [
 		path: '/editar/:id',
 		name: 'Editar',
 		component: editar
+	},
+	{
+		path: '/exportPDF/',
+		name: 'Exportar',
+		component: Exportar
 	}
 
 
@@ -37,7 +43,7 @@ const routes = [
 
 
 const router = createRouter({
-	history: createWebHistory(),
+	history: createWebHistory(import.meta.env.BASE_URL),
 	routes
 })
 
