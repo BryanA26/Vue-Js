@@ -7,7 +7,9 @@
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "build:crinmo":"vite build --base=/crinmo/pqrs/dist",
+    "build:portada":"vite build --base=/"
   },
   "dependencies": {
     "bootstrap-icons": "^1.11.1",
