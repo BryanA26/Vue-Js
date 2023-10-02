@@ -6,16 +6,20 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest"
   },
   "dependencies": {
     "bootstrap-icons": "^1.11.1",
+    "happy-dom": "^12.2.1",
     "vue": "^3.3.4",
     "vue-awesome-paginate": "^1.1.46",
     "vue-router": "^4.2.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
-    "vite": "^4.4.5"
+    "@vue/test-utils": "^2.4.1",
+    "vite": "^4.4.5",
+    "vitest": "^0.34.5"
   }
 }
