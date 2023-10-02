@@ -1,23 +1,15 @@
-<template>
-	<div>
-		<h1>My Component</h1>
-		<input type="text" v-model="inputValue">
-		<button @click="handleClick">Submit</button>
-	</div>
-</template>
-
-<script>
-export default {
-	data() {
-		return {
-			inputValue: ''
-		}
-	},
-	methods: {
-		handleClick() {
-			console.log(this.inputValue)
-			// do something with the input value
-		}
-	}
-}
+<script setup>
+import { ref } from "vue";
+const msg = ref("Hello World!");
+const new_msg = ref(undefined);
+const changeMsg = () => {
+	msg.value = new_msg.value
+};
 </script>
+<template>
+	<h1>
+		{{ msg }}
+	</h1>
+	<input type="text" v-model="new_msg">
+	<button @click="changeMsg">Click me</button>
+</template>
