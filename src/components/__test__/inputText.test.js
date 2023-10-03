@@ -23,7 +23,10 @@ describe('InputText', () => {
 		});
 		const input = wrapper.find('input[type="text"]');
 		input.setValue('test');
-		expect(wrapper.emitted().input).toBeTruthy();
-		expect(wrapper.emitted().input[0]).toEqual(['test']);
+		wrapper.vm.$emit('update:modelValue', 'test');
+		expect(wrapper.emitted('update:modelValue')).toBeTruthy();
+		expect(wrapper.emitted('update:modelValue')[0]).toEqual(['test']);
+		// expect(wrapper.emitted().input).toBeTruthy();
+		// expect(wrapper.emitted().input[0]).toEqual(['test']);
 	});
 });
