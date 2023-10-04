@@ -33,7 +33,7 @@ const routes = [
 		component: editar
 	},
 	{
-		path: '/exportPDF/',
+		path: '/exportPDF/:id',
 		name: 'Exportar',
 		component: Exportar
 	}
