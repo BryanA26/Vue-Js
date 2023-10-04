@@ -2,7 +2,6 @@
 const url = 'http://10.1.1.8/api/v1/pqrs/'
 const API_TOKEN = import.meta.env.VITE_API_TOKEN
 
-
 export function fetchPost(datosEnviar) {
 	const options = {
 		method: 'POST',

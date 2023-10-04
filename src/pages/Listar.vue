@@ -49,7 +49,7 @@
 								</button>
 								<div class="dropdown-menu">
 									<router-link :to="'/editar/' + api.id_pqrs" class="dropdown-item" href="#">Gestionar</router-link>
-									<a class="dropdown-item" href="#">Exportar PDF</a>
+									<router-link :to="'/exportPdf/'+ api.id_pqrs" class="dropdown-item" href="#">Exportar PDF</router-link>
 								</div>
 							</div>
 						</td>
@@ -61,7 +61,7 @@
 							<div class="dropdown-menu">
 								<a name="" id="" class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="detallesModal" @click="abrirModal(api.mensaje)">Mensaje</a>
 
-								<a name="" id="" class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="detallesModal" @click="abrirModal(api.observaciones)">Observaciones</a>
+								<a  :to="'/exportPdf/' + api.id_pqrs" name="" id="" class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="detallesModal" @click="abrirModal(api.observaciones)">Observaciones</a>
 							</div>
 						</td>
 					</tr>
@@ -84,7 +84,7 @@
 
 <script setup>
 import modalRespuesta from '../components/modalRespuesta.vue';
-import { reactive, ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { loadInitialData } from '../fetch.query';
 
 const loadedData = ref([]);

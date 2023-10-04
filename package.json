@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "build:crinmo":"vite build --base=/crinmo/pqrs/dist",
-    "build:portada":"vite build --base=/"
+    "build:portada":"vite build --base=/dist/"
   },
   "dependencies": {
     "bootstrap-icons": "^1.11.1",
