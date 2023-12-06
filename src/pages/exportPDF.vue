@@ -11,14 +11,14 @@
 
 	<body>
 		<h3> PETICIONES - QUEJAS - RECLAMOS - SUGERENCIAS </h3>
-		<table class="table table-bordered" >
+		<table class="table table-bordered">
 			<thead class="thead-dark">
 				<tr>
 					<th colspan="4">
 						<div class="icons" style="display: block;">
 							<!-- <iconsSvg fecha="true" /> -->
 							<span>FECHA Y HORA DE REGISTRO</span>
-								<div>{{ pqrs.fecha_registro }}</div>
+							<div>{{ pqrs.fecha_registro }}</div>
 						</div>
 					</th>
 				</tr>
@@ -33,7 +33,7 @@
 					</th>
 				</tr>
 				<tr>
-					<th colspan="2">
+					<th colspan="1">
 						<div class="icons">
 							<iconsSvg Area="true" />
 							<span>
@@ -41,11 +41,31 @@
 							</span>
 						</div>
 					</th>
-					<td colspan="2">{{ pqrs.area_enc }}</td>
+					<td colspan="3">{{ pqrs.area_enc }}</td>
 				</tr>
 
 			</thead>
 			<tbody>
+				<tr>
+					<th>
+						<div class="icons">
+							<iconsSvg estado="true" />
+							<span>
+								ESTADO
+							</span>
+						</div>
+					</th>
+					<td>{{ pqrs.estado }}</td>
+					<th>
+						<div class="icons">
+							<iconsSvg terminos="true" />
+							<span>
+								NÚM. RADICADO
+							</span>
+						</div>
+					</th>
+					<td>{{ pqrs.id_pqrs }}</td>
+				</tr>
 				<tr>
 					<th>
 						<div class="icons">
@@ -90,27 +110,7 @@
 					<td>{{ pqrs.email }}</td>
 				</tr>
 				<tr>
-					<th>
-						<div class="icons">
-							<iconsSvg estado="true" />
-							<span>
-								ESTADO
-							</span>
-						</div>
-					</th>
-					<td>{{pqrs.estado}}</td>
-					<th>
-						<div class="icons">
-							<iconsSvg terminos="true" />
-							<span>
-								ACEPTÓ TERMINOS Y CONDICIONES
-							</span>
-						</div>
-					</th>
-					<td>{{ pqrs.gdpr }}</td>
-				</tr>
-				<tr>
-					<th colspan="2">
+					<th colspan="1">
 						<div class="icons">
 							<iconsSvg mensaje="true" />
 							<span>
@@ -118,10 +118,10 @@
 							</span>
 						</div>
 					</th>
-					<td colspan="2">{{pqrs.mensaje}}</td>
+					<td colspan="3">{{ pqrs.mensaje }}</td>
 				</tr>
 				<tr>
-					<th colspan="2">
+					<th colspan="1">
 						<div class="icons">
 							<iconsSvg observaciones="true" />
 							<span>
@@ -129,7 +129,7 @@
 							</span>
 						</div>
 					</th>
-					<td colspan="2">{{pqrs.observaciones}}</td>
+					<td colspan="3">{{ pqrs.observaciones }}</td>
 				</tr>
 				<!-- Agrega más filas según sea necesario -->
 			</tbody>
@@ -141,18 +141,18 @@
 <style scoped>
 /* Estilos para la tabla */
 table {
-
 	border-collapse: collapse;
 	margin: auto;
 	width: auto;
 }
 
-h3{
+h3 {
 	text-align: center;
-	margin-top: 3.75rem;
-	margin-bottom: 3.75rem;
+	margin-top: 3.25rem;
+	margin-bottom: 3.25rem;
 	font-family: Arial, Helvetica, sans-serif;
 }
+
 .icons {
 	display: inline-flex;
 	align-items: center;
@@ -162,11 +162,14 @@ h3{
 th,
 td {
 	/* border: 1px solid black; */
-	padding: 10px;
+	padding: 5px;
 	text-align: center;
-	width: 200px !important;
+	max-width: 200px !important;
 	height: 30px;
-    font-family: Arial, Helvetica, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
+	border: 0.0625rem solid #ccc;
+	word-wrap: break-word;
+	white-space: normal;
 }
 
 th {
@@ -175,10 +178,10 @@ th {
 </style>
 <script setup>
 import iconsSvg from '../components/iconsSvg.vue';
-import { fecha,info,area,nombres,contacto,documento,email,estado,terminos,mensaje,observaciones } from '../components/svg';
-import {cargarDatosPqr} from '../fetch.query';
-import {ref, onMounted} from 'vue';
-import {useRoute} from 'vue-router';
+import { fecha, info, area, nombres, contacto, documento, email, estado, terminos, mensaje, observaciones } from '../components/svg';
+import { cargarDatosPqr } from '../fetch.query';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 
 
 const route = useRoute()
@@ -194,14 +197,14 @@ const pqrs = ref({
 	mensaje: "",
 	estado: "",
 	area_enc: "",
-	identificacion:"",
-	observaciones:"",
-	nombres_apellidos:"",
-    gdpr:"SI"
+	identificacion: "",
+	observaciones: "",
+	nombres_apellidos: "",
+	gdpr: "SI"
 })
 
 const created = async () => {
-	const id = 366
+	const id = route.params.id
 	pqrs.value = await cargarDatosPqr(id);
 }
 
@@ -216,6 +219,7 @@ const openPDFView = () => {
 
 				border-collapse: collapse;
 				margin: auto;
+				width: auto;
 			}
 
 			.icons {
@@ -224,41 +228,46 @@ const openPDFView = () => {
 				gap: 0.1rem;
 			}
 
-			h2{
+			h3{
 				text-align: center;
-				margin-top:3.75rem;
-				margin-bottom: 3.75rem;
+				margin-top:3.25rem;
+				margin-bottom: 3.25rem;
 				font-family: Arial, Helvetica, sans-serif;
 			}
 
 			th,
 			td {
 				padding: 10px;
+				font-size: 12px;
 				text-align: center;
-				width: 200px !important;
-				height: 50px;
+				max-width: 200px !important;
+				height: 30px;
 				font-family: Arial, Helvetica, sans-serif;
+				border: 0.0625rem solid #ccc;
+				word-wrap: break-word;
+				white-space: normal;
 			}
 
 			th {
 				background-color: #f2f2f2;
 			}
+			
 			</style>
 
             <div>
               <img src=${image} class="cabecera" alt="Descripción de la imagen" style="width: 200px;>
             </div>
+			<div style="margin-top: 20px;">
+              <h3>PETICIONES - QUEJAS - RECLAMOS - SUGERENCIAS</h3>
+            </div>
         </head>
 		<body>
-            <div style="margin-top: 20px;">
-              <h2>PETICIONES - QUEJAS - RECLAMOS - SUGERENCIAS</h2>
-            </div>
 			<table class="table table-bordered">
 			<thead class="thead-dark">
 				<tr>
 					<th colspan="4">
 						<div class="icons" style="display:block;">
-							${fecha}
+
 							<span>
 								FECHA DE REGISTRO
 							</span>
@@ -277,7 +286,7 @@ const openPDFView = () => {
 					</th>
 				</tr>
 				<tr>
-					<th colspan="2">
+					<th colspan="1">
 						<div class="icons">
 							${area}
 							<span>
@@ -285,11 +294,31 @@ const openPDFView = () => {
 							</span>
 						</div>
 					</th>
-					<td colspan="2">${pqrs.value.area_enc}</td>
+					<td colspan="3">${pqrs.value.area_enc}</td>
 				</tr>
 
 			</thead>
 			<tbody>
+				<tr>
+					<th>
+						<div class="icons">
+							${estado}
+							<span>
+								ESTADO
+							</span>
+						</div>
+					</th>
+					<td>${pqrs.value.estado}</td>
+					<th>
+						<div class="icons">
+							${terminos}
+							<span>
+								NÚM. RADICADO
+							</span>
+						</div>
+					</th>
+					<td>${pqrs.value.id_pqrs}</td>
+				</tr>
 				<tr>
 					<th>
 						<div class="icons">
@@ -335,26 +364,6 @@ const openPDFView = () => {
 					<td>${pqrs.value.email}</td>
 				</tr>
 				<tr>
-					<th>
-						<div class="icons">
-							${estado}
-							<span>
-								ESTADO
-							</span>
-						</div>
-					</th>
-					<td>${pqrs.value.estado}</td>
-					<th>
-						<div class="icons">
-							${terminos}
-							<span>
-								ACEPTÓ TERMINOS Y CONDICIONES
-							</span>
-						</div>
-					</th>
-					<td>${pqrs.value.gdpr}</td>
-				</tr>
-				<tr>
 					<th colspan="2">
 						<div class="icons">
 							${mensaje}
@@ -393,7 +402,7 @@ const openPDFView = () => {
 	newWindow.document.close();
 };
 
-onMounted(()=>{
+onMounted(() => {
 	created()
 })
 
