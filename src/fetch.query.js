@@ -1,22 +1,19 @@
-
-const url = 'http://10.1.1.8/api/v1/pqrs/'
+const url = 'https://portadainmobiliaria.cloud/api/v1.1/pqrs/'
 const API_TOKEN = import.meta.env.VITE_API_TOKEN
 
 export function fetchPost(datosEnviar) {
 	const options = {
 		method: 'POST',
 		headers: {
-			'User-Agent': 'Insomnia/2023.5.6',
 			Authorization: API_TOKEN
 		},
 		body: JSON.stringify(datosEnviar)
 	};
 
-	fetch(url, options)
+	return fetch(url, options)
 		.then(respuesta => respuesta.json())
 		.then(datosRespuesta => {
-			console.log(datosRespuesta);
-
+			return datosRespuesta;
 		})
 		.catch(error => {
 			console.error('Error al enviar la solicitud:', error);
@@ -27,7 +24,6 @@ export function cargarDatosPqr(id) {
 	const options = {
 		method: 'GET',
 		headers: {
-			'User-Agent': 'Insomnia/2023.5.6',
 			Authorization: API_TOKEN
 		},
 
@@ -48,7 +44,6 @@ export function actualizarPqr(datosEnviar) {
 	const options = {
 		method: 'PUT',
 		headers: {
-			'User-Agent': 'Insomnia/2023.5.6',
 			Authorization: API_TOKEN
 		},
 		body: JSON.stringify(datosEnviar)
@@ -71,12 +66,11 @@ export async function loadInitialData(pagina = 1) {
 	const options = {
 		method: 'GET',
 		headers: {
-			'User-Agent': 'Insomnia/2023.5.6',
 			Authorization: API_TOKEN
 		},
 	};
 	try {
-		const response = await fetch(`http://10.1.1.8/api/v1/pqrs/?limit=${initialLoadAmount}&page=${pagina}`, options)
+		const response = await fetch(`${url}?limit=${initialLoadAmount}&page=${pagina}`, options)
 		if (!response.ok) {
 			throw new Error(`Error en la solicitud: ${response.status} - ${response.statusText}`)
 		}
@@ -96,12 +90,11 @@ export function filterData(pagina) {
 	const options = {
 		method: 'GET',
 		headers: {
-			'User-Agent': 'Insomnia/2023.5.6',
 			Authorization: API_TOKEN
 		},
 	};
 
-	return fetch(`http://10.1.1.8/api/v1/pqrs/?limit=${itemsPerPage}&page=${pagina}`, options)
+	return fetch(`${url}?limit=${itemsPerPage}&page=${pagina}`, options)
 		.then(response => response.json())
 		.then(data => {
 			return data

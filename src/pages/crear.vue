@@ -116,8 +116,10 @@ const crearPqr = async () => {
 		gdpr: pqrs.value.gdpr,
 		estado: "SIN GESTIONAR",
 	}
-	await fetchPost(datosEnviar)
-	router.push('/Listar')
+	fetchPost(datosEnviar)
+	.then((res) => {
+		router.push({ name: 'Exportar', params: { id: res.new_id } })
+	})
 }
 
 

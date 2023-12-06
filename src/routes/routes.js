@@ -4,7 +4,7 @@ import Details from '../pages/Details.vue'
 import Listar from '../pages/Listar.vue'
 import crear from '../pages/crear.vue'
 import editar from '../pages/editar.vue'
-import Exportar	from '../pages/exportPDF.vue'
+import Exportar from '../pages/exportPDF.vue'
 
 const routes = [
 	{
@@ -37,8 +37,18 @@ const routes = [
 		name: 'Exportar',
 		component: Exportar
 	}
-
-
+]
+const routes_portada = [
+	{
+		path: '/',
+		name: 'Home',
+		component: crear
+	},
+	{
+		path: '/exportPDF/:id',
+		name: 'Exportar',
+		component: Exportar
+	}
 ]
 
 
