@@ -59,7 +59,7 @@ const routes_portada = [
 
 const router = createRouter({
 	history: createWebHashHistory(import.meta.env.BASE_URL),
-	routes_portada
+	routes: routes_portada
 })
 
 export default router
