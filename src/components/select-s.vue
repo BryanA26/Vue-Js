@@ -1,6 +1,6 @@
 <template>
 	<div class="form-floating">
-		<select class="form-select" :id="inputId"  @change="$emit('update:selectValue', $event.target.value)" :value="selectedValue" :aria-label="label" :disabled="!editable">
+		<select class="form-select" :id="inputId"  @change="$emit('update:selectValue', $event.target.value)" :value="selectedValue" :aria-label="label" :disabled="!editable" required>
 			<option :value="''"></option>
 			<option v-for="option in options" :key="option.value" :value="option.value">{{ option.label }}</option>
 		</select>

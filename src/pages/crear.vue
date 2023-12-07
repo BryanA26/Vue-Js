@@ -36,7 +36,7 @@
 					<div class="mb-3">
 						<label for="gdprCheck" class="form-label">GDPR</label>
 						<div class="form-check">
-							<input class="form-check-input" type="checkbox" value="" v-model="pqrs.gdpr" id="defaultCheck1">
+							<input class="form-check-input" type="checkbox" value="" v-model="pqrs.gdpr" id="defaultCheck1" required>
 							<label class="form-check-label" for="defaultCheck1">
 								Acepto el consentimiento para tratamiento de datos personales. Acepto el manual de políticas
 								y procedimientos.
@@ -44,7 +44,7 @@
 						</div>
 					</div>
 
-					<button type="submit" class="btn btn-primary">ENVIAR PQR</button>
+					<button type="submit" class="btn btn-primary" :disabled="enviando">ENVIAR PQR</button>
 
 				</form>
 			</div>
@@ -62,9 +62,8 @@ import { fetchPost } from '../fetch.query';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 
-
-
 const router = useRouter()
+const enviando = ref(false)
 
 const pqrs = ref({
 	tipo_doc: "",
@@ -102,6 +101,12 @@ const areaOptions = ref([
 
 
 const crearPqr = async () => {
+
+	if (enviando.value) {
+		return;
+	}
+
+	enviando.value = true;
 	pqrs.value.nombres_apellidos = pqrs.value.nombres_apellidos.toUpperCase();
 	pqrs.value.mensaje = pqrs.value.mensaje.toUpperCase();
 
@@ -116,10 +121,14 @@ const crearPqr = async () => {
 		gdpr: pqrs.value.gdpr,
 		estado: "SIN GESTIONAR",
 	}
-	fetchPost(datosEnviar)
-	.then((res) => {
-		router.push({ name: 'Exportar', params: { id: res.new_id } })
-	})
+	try {
+		await fetchPost(datosEnviar)
+			.then((res) => {
+				router.push({ name: 'Exportar', params: { id: res.new_id } })
+			})
+	} catch (error) {
+		console.log("Error creating PQR:", error)
+	 }
 }
 
 

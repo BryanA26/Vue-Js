@@ -6,27 +6,6 @@ const state = reactive({
 
 const { apis } = toRefs(state)
 
-const options = {
-	method: 'GET',
-	headers: {
-		'User-Agent': 'Insomnia/2023.5.6',
-		Authorization: import.meta.env.VITE_API_TOKEN
-	}
-};
-
-
-fetch('http://10.1.1.8/api/v1/terminaciones/', options)
-	.then(response => response.json())
-	.then(data => {
-		console.log(data);
-		data.data.forEach((element, index) => {
-			const api = {
-				...element,
-				index: index + 1
-			};
-			state.apis.push(api);
-		});
-	});
 </script>
 
 
