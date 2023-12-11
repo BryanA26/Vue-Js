@@ -27,8 +27,10 @@
 							</div>
 						</th>
 					</tr>
+				</thead>
+				<tbody>
 					<tr>
-						<th colspan="1">
+						<th class="th_row_icon_spn">
 							<div class="icons">
 								<iconsSvg Area="true" />
 								<span>
@@ -38,9 +40,6 @@
 						</th>
 						<td colspan="3">{{ pqrs.area_enc }}</td>
 					</tr>
-
-				</thead>
-				<tbody>
 					<tr>
 						<th class="th_row_icon_spn">
 							<div class="icons">
@@ -60,8 +59,8 @@
 							</div>
 						</th>
 						<td>{{ pqrs.id_pqrs }}</td>
-						</tr>
-						<tr>
+					</tr>
+					<tr>
 						<th class="th_row_icon_spn">
 							<div class="icons">
 								<iconsSvg nombres="true" />
@@ -82,7 +81,7 @@
 						</th>
 						<td>{{ pqrs.tel }}</td>
 					</tr>
-						<tr>
+					<tr>
 						<th class="th_row_icon_spn">
 							<div class="icons">
 								<iconsSvg documento="true" />
@@ -138,7 +137,7 @@ h3 {
 	text-align: center;
 	margin-top: 3.25rem;
 	margin-bottom: 3.25rem;
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: Arial, Helvetica, sans-serif solid;
 }
 
 .icons {
@@ -147,7 +146,7 @@ h3 {
 	gap: 0.1rem;
 }
 
-.fecha_hora_span{
+.fecha_hora_span {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -158,8 +157,9 @@ td {
 	/* border: 1px solid black; */
 	padding: 5px;
 	text-align: center;
-	max-width: 200px!important;
-	height: 30px;
+	max-width: 12.5rem;
+	min-width: 18.75rem;
+	height: auto;
 	font-family: Arial, Helvetica, sans-serif;
 	border: 0.0625rem solid #ccc;
 	word-wrap: break-word;
@@ -174,6 +174,15 @@ th {
 	display: flex;
 	justify-content: center;
 	margin-top: 1em;
+
+}
+
+@media (width:1024px) {
+
+	th,
+	td {
+		min-width: 13.75rem;
+	}
 }
 
 @media (max-width: 768px) {
@@ -183,8 +192,17 @@ th {
 
 	.th_row_icon_spn {
 		display: flex;
+		height: auto;
 	}
 
+	.table tbody tr {
+		display: flex;
+		flex-direction: column;
+		border: 1px solid #ddd;
+		border-radius: 0.3125rem;
+		margin: auto;
+
+	}
 }
 </style>
 <script setup>
@@ -260,6 +278,8 @@ const openPDFView = () => {
 
 			th {
 				background-color: #f2f2f2;
+				print-color-adjust: exact;
+				-webkit-print-color-adjust:exact;
 			}
 
 			.img_logo {
@@ -267,6 +287,8 @@ const openPDFView = () => {
 				height:6.25rem;
 				width:12rem;
 				background-size: cover;
+				print-color-adjust: exact;
+				-webkit-print-color-adjust:exact;
 			}
 
 			</style>
