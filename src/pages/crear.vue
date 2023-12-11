@@ -34,7 +34,7 @@
 					</div>
 
 					<div class="mb-3">
-						<label for="gdprCheck" class="form-label">GDPR</label>
+						<label for="gdprCheck" class="form-label" style="color:rgba(33, 37, 41, 0.75)">Reglamento General de Protección de Datos *</label>
 						<div class="form-check">
 							<input class="form-check-input" type="checkbox" value="" v-model="pqrs.gdpr" id="defaultCheck1" required>
 							<label class="form-check-label" for="defaultCheck1">
