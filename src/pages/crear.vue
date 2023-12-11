@@ -127,7 +127,7 @@ const crearPqr = async () => {
 				router.push({ name: 'Exportar', params: { id: res.new_id } })
 			})
 	} catch (error) {
-		console.log("Error creating PQR:", error)
+		console.error("Error creating PQR:", error)
 	 }
 }
 
