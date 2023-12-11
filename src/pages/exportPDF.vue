@@ -138,6 +138,7 @@ h3 {
 	margin-top: 3.25rem;
 	margin-bottom: 3.25rem;
 	font-family: Arial, Helvetica, sans-serif solid;
+	font-size: 1.5rem;
 }
 
 .icons {
@@ -186,6 +187,10 @@ th {
 }
 
 @media (max-width: 768px) {
+
+	h3 {
+		font-size: 1.2rem
+	}
 	.table thead {
 		display: inherit;
 	}
