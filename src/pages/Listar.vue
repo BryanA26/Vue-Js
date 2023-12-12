@@ -49,7 +49,8 @@
 								</button>
 								<div class="dropdown-menu">
 									<router-link :to="'/editar/' + api.id_pqrs" class="dropdown-item" href="#">Gestionar</router-link>
-									<router-link :to="'/exportPdf/'+ api.id_pqrs" class="dropdown-item" href="#">Exportar PDF</router-link>
+									<router-link :to="'/PDFcrinmo/'+ api.id_pqrs" class="dropdown-item" href="#">Exportar PDF</router-link>
+									<!-- <router-link :to="'/exportPDF/'+ api.id_pqrs" class="dropdown-item" href="#">Exportar PDF</router-link> -->
 								</div>
 							</div>
 						</td>
