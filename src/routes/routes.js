@@ -1,10 +1,10 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import Home from '../pages/Home.vue'
 import Details from '../pages/Details.vue'
-import Listar from '../pages/Listar.vue'
-import crear from '../pages/crear.vue'
-import editar from '../pages/editar.vue'
-import Exportar from '../pages/exportPDF.vue'
+import Listar from '../moduls/pqrs/pages/Listar.vue'
+import crear from '../moduls/pqrs/pages/crear.vue'
+import editar from '../moduls/pqrs/pages//editar.vue'
+import Exportar from '../moduls/pqrs/pages/exportPDF.vue'
 
 const routes = [
 	{
@@ -42,14 +42,20 @@ const routes_portada = [
 	{
 		path: '/',
 		name: 'Home',
-		component: crear
+		component: Home
 	},
 	{
-		path: '/exportPDF/:id',
+		path: '/pqrs/exportPDF/:id',
 		name: 'Exportar',
-		component: Exportar
+		component: Exportar,
+	},
+	{
+		path: '/pqrs/crear/',
+		name: 'Crear',
+		component: crear
 	}
 ]
+
 
 
 // const router = createRouter({

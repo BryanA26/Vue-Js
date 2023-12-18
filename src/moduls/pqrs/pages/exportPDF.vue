@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<img src="/public/Image/Logo_Nitt.jpg" style="width: 200px;">
+		<img src="../../../../public/Image/Logo_Nitt.jpg" style="width: 200px;">
 		<h3> PETICIONES - QUEJAS - RECLAMOS - SUGERENCIAS </h3>
 	</div>
 
@@ -211,9 +211,9 @@ th {
 }
 </style>
 <script setup>
-import iconsSvg from '../components/iconsSvg.vue';
-import { fecha, info, area, nombres, contacto, documento, email, estado, terminos, mensaje, observaciones } from '../components/svg';
-import { cargarDatosPqr } from '../fetch.query';
+import iconsSvg from '../../../components/iconsSvg.vue';
+import { fecha, info, area, nombres, contacto, documento, email, estado, terminos, mensaje, observaciones } from '../../../components/svg';
+import { cargarDatosPqr } from '../../../fetch.query';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 

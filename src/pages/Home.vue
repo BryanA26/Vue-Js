@@ -8,17 +8,31 @@ const { apis } = toRefs(state)
 
 </script>
 
-
 <template>
 	<div>
-		<h1>Home</h1>
-
-		<ul>
-			<li v-for="api in apis" :key="api.index">
-
-				<router-link :to="`/details/${api.index}`"> {{ api.nombres_apellidos }}</router-link>
-				#{{ api.index }}
-			</li>
-		</ul>
+	  <router-link to="/pqrs/crear">
+		<button class="custom-button">PQRS</button>
+	  </router-link>
 	</div>
-</template>
+  </template>
+
+  <style>
+  .custom-button {
+	margin: 10px;
+	padding: 10px 20px;
+	background-color: #3498db;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+  }
+
+  .custom-button:hover {
+	background-color: #2980b9;
+  }
+
+  </style>
+
+

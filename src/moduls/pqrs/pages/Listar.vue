@@ -83,9 +83,9 @@
 
 
 <script setup>
-import modalRespuesta from '../components/modalRespuesta.vue';
+import modalRespuesta from '../../../components/modalRespuesta.vue';
 import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { loadInitialData } from '../fetch.query';
+import { loadInitialData } from '../../../fetch.query';
 
 const loadedData = ref([]);
 const isLoading = ref(false);

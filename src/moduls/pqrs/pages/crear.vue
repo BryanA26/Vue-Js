@@ -55,10 +55,10 @@
 
 
 <script setup>
-import ContainerText from '../components/containerText.vue';
-import InputText from '../components/inputText.vue';
-import selectS from '../components/select-s.vue';
-import { fetchPost } from '../fetch.query';
+import ContainerText from '../../../components/containerText.vue';
+import InputText from '../../../components/inputText.vue';
+import selectS from '../../../components/select-s.vue';
+import { fetchPost } from '../../../fetch.query';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 
