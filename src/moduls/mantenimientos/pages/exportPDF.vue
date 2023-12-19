@@ -1,22 +1,22 @@
 <template>
 	<div>
 		<img src="../../../../public/Image/Logo_Nitt.jpg" style="width: 200px;">
-		<h3> PETICIONES - QUEJAS - RECLAMOS - SUGERENCIAS </h3>
+		<h3> Formulario Mantenimientos y Reparaciones </h3>
 	</div>
 
 	<body>
 		<div class="table-responsive">
 			<table class="table table-bordered">
-				<thead class="thead-dark">
-					<tr>
+				<thead class="thead-dark"><tr>
 						<th colspan="4">
 							<div class="icons fecha_hora_span">
 								<!-- <iconsSvg fecha="true" /> -->
 								<span>FECHA Y HORA DE REGISTRO</span>
-								<div>{{ pqrs.fecha_registro }}</div>
+								<div>{{ mantenimiento.fecha_registro }}</div>
 							</div>
 						</th>
 					</tr>
+
 					<tr>
 						<th colspan="4">
 							<div class="icons">
@@ -34,11 +34,11 @@
 							<div class="icons">
 								<iconsSvg Area="true" />
 								<span>
-									ÁREA ENCARGADA
+									Reportado A
 								</span>
 							</div>
 						</th>
-						<td colspan="3">{{ pqrs.area_enc }}</td>
+						<td colspan="3">{{ mantenimiento.area_enc }}</td>
 					</tr>
 					<tr>
 						<th class="th_row_icon_spn">
@@ -49,7 +49,7 @@
 								</span>
 							</div>
 						</th>
-						<td>{{ pqrs.estado }}</td>
+						<td>{{ mantenimiento.estado }}</td>
 						<th class="th_row_icon_spn">
 							<div class="icons">
 								<iconsSvg terminos="true" />
@@ -58,7 +58,7 @@
 								</span>
 							</div>
 						</th>
-						<td>{{ pqrs.id_pqrs }}</td>
+						<td>{{ mantenimiento.id_mantenimiento }}</td>
 					</tr>
 					<tr>
 						<th class="th_row_icon_spn">
@@ -69,7 +69,7 @@
 								</span>
 							</div>
 						</th>
-						<td>{{ pqrs.nombres_apellidos }}</td>
+						<td>{{ mantenimiento.nombres_apellidos }}</td>
 
 						<th class="th_row_icon_spn">
 							<div class="icons">
@@ -79,7 +79,7 @@
 								</span>
 							</div>
 						</th>
-						<td>{{ pqrs.tel }}</td>
+						<td>{{ mantenimiento.tel }}</td>
 					</tr>
 					<tr>
 						<th class="th_row_icon_spn">
@@ -90,8 +90,8 @@
 								</span>
 							</div>
 						</th>
-						<td>{{ pqrs.tipo_doc }} -
-							{{ pqrs.identificacion }}
+						<td>{{ mantenimiento.tipo_doc }} -
+							{{ mantenimiento.identificacion }}
 						</td>
 						<th class="th_row_icon_spn">
 							<div class="icons">
@@ -101,7 +101,7 @@
 								</span>
 							</div>
 						</th>
-						<td>{{ pqrs.email }}</td>
+						<td>{{ mantenimiento.email }}</td>
 					</tr>
 					<tr>
 						<th class="th_row_icon_spn" colspan="1">
@@ -112,7 +112,18 @@
 								</span>
 							</div>
 						</th>
-						<td colspan="3">{{ pqrs.mensaje }}</td>
+						<td colspan="3">{{ mantenimiento.mensaje }}</td>
+					</tr>
+					<tr>
+						<th class="th_row_icon_spn" colspan="1">
+							<div class="icons">
+								<iconsSvg imag="true" />
+								<span>
+									IMAGEN/FOTO
+								</span>
+							</div>
+						</th>
+						<td colspan="3">{{ mantenimiento.imag }}</td>
 					</tr>
 					<!-- Agrega más filas según sea necesario -->
 				</tbody>
@@ -212,8 +223,8 @@ th {
 </style>
 <script setup>
 import iconsSvg from '../../../components/iconsSvg.vue';
-import { fecha, info, area, nombres, contacto, documento, email, estado, terminos, mensaje, observaciones } from '../../../components/svg';
-import { cargarDatosPqr } from '../fetch.query';
+import { fecha, info, area, nombres, contacto, documento, estado, terminos, email, mensaje } from '../../../components/svg';
+import { cargarDatosMantenimiento } from '../fetch.query';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
@@ -221,24 +232,26 @@ import { useRoute } from 'vue-router';
 const route = useRoute()
 const time = 1000;
 
-const pqrs = ref({
-	tipo_doc: "",
-	id_pqrs: "",
+const mantenimiento = ref({
+	id_mantenimiento: "",
 	fecha_registro: "",
+	reportar: "",
+	tipo_doc: "",
+	identificacion: "",
+	nombres_apellidos: "",
 	email: "",
+	address: "",
 	tel: "",
-	mensaje: "",
 	estado: "",
 	area_enc: "",
-	identificacion: "",
-	observaciones: "",
-	nombres_apellidos: "",
-	gdpr: "SI"
+	mensaje: "",
+	imag: "",
+	gdpr: false,
 })
 
 const created = async () => {
 	const id = route.params.id
-	pqrs.value = await cargarDatosPqr(id);
+	mantenimiento.value = await cargarDatosMantenimiento(id);
 }
 
 const openPDFView = () => {
@@ -301,7 +314,7 @@ const openPDFView = () => {
 			<div style="margin-top: 20px;">
 				<div class="img_logo">
 				</div>
-              <h3>PETICIONES - QUEJAS - RECLAMOS - SUGERENCIAS</h3>
+              <h3>Formulario Mantenimientos y Reparaciones</h3>
             </div>
         </head>
 		<body>
@@ -310,11 +323,10 @@ const openPDFView = () => {
 				<tr>
 					<th colspan="4">
 						<div class="icons" style="display:block;">
-
 							<span>
 								FECHA DE REGISTRO
 							</span>
-							<div>${pqrs.value.fecha_registro}</div>
+							<div>${mantenimiento.value.fecha_registro}</div>
 						</div>
 					</th>
 				</tr>
@@ -337,7 +349,7 @@ const openPDFView = () => {
 							</span>
 						</div>
 					</th>
-					<td colspan="3">${pqrs.value.area_enc}</td>
+					<td colspan="3">${mantenimiento.value.area_enc}</td>
 				</tr>
 
 			</thead>
@@ -351,7 +363,7 @@ const openPDFView = () => {
 							</span>
 						</div>
 					</th>
-					<td>${pqrs.value.estado}</td>
+					<td>${mantenimiento.value.estado}</td>
 					<th>
 						<div class="icons">
 							${terminos}
@@ -360,7 +372,7 @@ const openPDFView = () => {
 							</span>
 						</div>
 					</th>
-					<td>${pqrs.value.id_pqrs}</td>
+					<td>${mantenimiento.value.id_mantenimiento}</td>
 				</tr>
 				<tr>
 					<th>
@@ -371,7 +383,7 @@ const openPDFView = () => {
 							</span>
 						</div>
 					</th>
-					<td>${pqrs.value.nombres_apellidos}</td>
+					<td>${mantenimiento.value.nombres_apellidos}</td>
 
 					<th>
 						<div class="icons">
@@ -381,7 +393,7 @@ const openPDFView = () => {
 							</span>
 						</div>
 					</th>
-					<td>${pqrs.value.tel}</td>
+					<td>${mantenimiento.value.tel}</td>
 				</tr>
 				<tr>
 					<th>
@@ -393,8 +405,8 @@ const openPDFView = () => {
 						</div>
 					</th>
 					<td>
-						${pqrs.value.tipo_doc}-
-						${pqrs.value.identificacion}
+						${mantenimiento.value.tipo_doc}-
+						${mantenimiento.value.identificacion}
 					</td>
 					<th>
 						<div class="icons">
@@ -404,7 +416,7 @@ const openPDFView = () => {
 							</span>
 						</div>
 					</th>
-					<td>${pqrs.value.email}</td>
+					<td>${mantenimiento.value.email}</td>
 				</tr>
 				<tr>
 					<th colspan="2">
@@ -415,8 +427,19 @@ const openPDFView = () => {
 							</span>
 						</div>
 					</th>
-					<td colspan="2">${pqrs.value.mensaje}</td>
+					<td colspan="2">${mantenimiento.value.mensaje}</td>
 				</tr>
+				<tr>
+					<th colspan="2">
+						<div class="icons">
+							<span>
+								IMAGEN/FOTO
+							</span>
+						</div>
+					</th>
+					<td colspan="2">${mantenimiento.value.imag}</td>
+				</tr>
+
 				<!-- Agrega más filas según sea necesario -->
 			</tbody>
 		</table>

@@ -5,6 +5,9 @@ import Listar from '../moduls/pqrs/pages/Listar.vue'
 import crear from '../moduls/pqrs/pages/crear.vue'
 import editar from '../moduls/pqrs/pages//editar.vue'
 import Exportar from '../moduls/pqrs/pages/exportPDF.vue'
+import ExportarMantenimiento from '../moduls/mantenimientos/pages/exportPDF.vue'
+import crearMantenimiento from '../moduls/mantenimientos/pages/crear.vue'
+
 
 const routes = [
 	{
@@ -53,7 +56,18 @@ const routes_portada = [
 		path: '/pqrs/crear/',
 		name: 'Crear',
 		component: crear
-	}
+	},
+	{
+		path: '/mantenimientos/exportPDF/:id',
+		name: 'ExportarMatenimento',
+		component: ExportarMantenimiento,
+	},
+	{
+		path: '/mantenimientos/crear/',
+		name: 'CrearMantenimientos',
+		component: crearMantenimiento
+	},
+
 ]
 
 

@@ -25,5 +25,10 @@
     "@vue/test-utils": "^2.4.1",
     "vite": "^4.4.5",
     "vitest": "^0.34.5"
+  },
+  "browser": {
+    "fs": false,
+    "os": false,
+    "path": false
   }
 }
