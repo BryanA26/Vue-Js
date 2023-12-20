@@ -7,7 +7,7 @@ import editar from '../moduls/pqrs/pages//editar.vue'
 import Exportar from '../moduls/pqrs/pages/exportPDF.vue'
 import ExportarMantenimiento from '../moduls/mantenimientos/pages/exportPDF.vue'
 import crearMantenimiento from '../moduls/mantenimientos/pages/crear.vue'
-
+import ExportPdfCrinmo from '../pages/PDFcrinmo.vue'
 
 const routes = [
 	{
@@ -39,6 +39,11 @@ const routes = [
 		path: '/exportPDF/:id',
 		name: 'Exportar',
 		component: Exportar
+	},
+	{
+		path:'/PDFcrinmo/:id',
+		name: 'ExportPdfCrinmo',
+		component: ExportPdfCrinmo
 	}
 ]
 const routes_portada = [
@@ -70,6 +75,44 @@ const routes_portada = [
 
 ]
 
+const routes_crinmo = [
+	{
+		path: '/editar/:id',
+		name: 'Editar',
+		component: editar
+	},
+	{
+		path: '/',
+		name: 'Home',
+		component: Home
+	},
+	{
+		path:'/PDFcrinmo/:id',
+		name: 'ExportPdfCrinmo',
+		component: ExportPdfCrinmo
+	},
+	{
+		path: '/mantenimientos/exportPDF/:id',
+		name: 'ExportarMatenimento',
+		component: ExportarMantenimiento,
+	},
+	{
+		path: '/mantenimientos/crear/',
+		name: 'CrearMantenimientos',
+		component: crearMantenimiento
+	},
+	{
+		path: '/pqrs/exportPDF/:id',
+		name: 'Exportar',
+		component: Exportar,
+	},
+	{
+		path: '/pqrs/crear/',
+		name: 'Crear',
+		component: crear
+	},
+]
+
 
 
 // const router = createRouter({
@@ -77,9 +120,14 @@ const routes_portada = [
 // 	routes
 // })
 
-const router = createRouter({
+// const router = createRouter({
+// 	history: createWebHashHistory(import.meta.env.BASE_URL),
+// 	routes: routes_portada
+// })
+
+const router = createRouter ({
 	history: createWebHashHistory(import.meta.env.BASE_URL),
-	routes: routes_portada
+	routes: routes_crinmo
 })
 
 export default router

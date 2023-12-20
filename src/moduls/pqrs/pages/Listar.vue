@@ -49,7 +49,8 @@
 								</button>
 								<div class="dropdown-menu">
 									<router-link :to="'/editar/' + api.id_pqrs" class="dropdown-item" href="#">Gestionar</router-link>
-									<router-link :to="'/exportPdf/'+ api.id_pqrs" class="dropdown-item" href="#">Exportar PDF</router-link>
+									<router-link :to="'/PDFcrinmo/'+ api.id_pqrs" class="dropdown-item" href="#">Exportar PDF</router-link>
+									<!-- <router-link :to="'/exportPDF/'+ api.id_pqrs" class="dropdown-item" href="#">Exportar PDF</router-link> -->
 								</div>
 							</div>
 						</td>
@@ -85,7 +86,7 @@
 <script setup>
 import modalRespuesta from '../../../components/modalRespuesta.vue';
 import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { loadInitialData } from '../fetch.query';
+import { loadInitialData } from '/fetch.query';
 
 const loadedData = ref([]);
 const isLoading = ref(false);
