@@ -15,7 +15,7 @@
 
 						<div class="col-md-6">
 							<div class="input-group has-validation">
-								<div class="form-floating ">
+								<div class="form-floating">
 									<inputText type="text" inputId="floatingInputGroup1" v-model="pqrs.id_pqrs" placeholder="id" label="Número de Radicado" :editable="true" />
 								</div>
 							</div>
@@ -25,7 +25,7 @@
 							<div class="my-3">
 								<div class="input-group has-validation">
 									<div class="form-floating ">
-										<inputText type="text" inputId="floatingInputGroup1" v-model="pqrs.fecha_registro" placeholder="id" label="Número de Radicado" :editable="true" />
+										<inputText type="text" inputId="floatingInputGroup1" v-model="pqrs.fecha_registro" placeholder="id" label="Fecha y Hora de Registro" :editable="true" />
 									</div>
 								</div>
 							</div>
@@ -41,7 +41,7 @@
 
 						<div class="col-md-6">
 							<div class="form-floating">
-								<selectS inputId="'floatingSelect'" :selected-value="pqrs.tipo_doc" :label="'Área encargada *'" :options="docOptions" @update:select-value="pqrs.tipo_doc = $event" :editable="false" />
+								<selectS inputId="'floatingSelect'" :selected-value="pqrs.tipo_doc" :label="'Tipo de Documento *'" :options="docOptions" @update:select-value="pqrs.tipo_doc = $event" :editable="false" />
 							</div>
 						</div>
 
@@ -67,7 +67,7 @@
 							<div class="my-3">
 								<div class="input-group has-validation">
 									<div class="form-floating">
-										<inputText type="text" inputId="floatingInputGroup1" v-model="pqrs.tel" placeholder="tel" label="Número de contacto" :editable="true" />
+										<inputText type="text" inputId="floatingInputGroup1" v-model="pqrs.tel" placeholder="tel" label="Número de Contacto" :editable="true" />
 									</div>
 								</div>
 							</div>
@@ -87,7 +87,7 @@
 							<div class="col-md-6">
 								<div class="container">
 									<div class="mb-3">
-										<containerText inputId="textArea" label="Mensaje" :rows="3" :maxlength="180" :text-value="pqrs.mensaje" />
+										<containerText inputId="textArea" label="Mensaje" :rows="3" :maxlength="180" :text-value="pqrs.mensaje" :editable="true" />
 									</div>
 								</div>
 							</div>
@@ -95,7 +95,7 @@
 							<div class="col-md-6">
 								<div class="mb-3">
 									<div class="container">
-										<containerText inputId="textArea" label="Observaciones" :rows="3" :maxlength="180" :text-value="pqrs.observaciones" @update:textValue="pqrs.observaciones = $event" />
+										<containerText inputId="textArea" label="Observaciones" :rows="3" :maxlength="180" :text-value="pqrs.observaciones" @update:textValue="pqrs.observaciones = $event" :editable="false" />
 									</div>
 								</div>
 							</div>
@@ -113,11 +113,11 @@
 
 
 <script setup>
-import inputText from '../components/inputText.vue';
-import selectS from '../components/select-s.vue';
-import containerText from '../components/containerText.vue';
+import inputText from '../../../components/inputText.vue';
+import selectS from '../../../components/select-s.vue';
+import containerText from '../../../components/containerText.vue';
 import { ref, onMounted } from 'vue';
-import { cargarDatosPqr, actualizarPqr } from '../fetch.query';
+import { cargarDatosPqr, actualizarPqr } from '/fetch.query';
 import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter()
@@ -169,7 +169,7 @@ const created = async () => {
 }
 
 const volver = () => {
-	router.push('/Listar')
+	router.push('/')
 }
 
 const prepareData = () => {
@@ -187,13 +187,11 @@ const prepareData = () => {
 		mensaje: pqrs.value.mensaje
 	}
 	actualizarPqr(datosEnviar)
-	router.push('/Listar')
+	router.push('/')
 }
 
-onMounted(()=>{
+onMounted(() => {
 	created()
 })
 
 </script>
-
-

@@ -114,6 +114,17 @@
 						</th>
 						<td colspan="3">{{ pqrs.mensaje }}</td>
 					</tr>
+					<tr>
+						<th class="th_row_icon_spn" colspan="1">
+							<div class="icons">
+								<iconsSvg observaciones="true" />
+								<span>
+									OBSERVACIONES
+								</span>
+							</div>
+						</th>
+						<td colspan="3">{{ pqrs.observaciones }}</td>
+					</tr>
 					<!-- Agrega más filas según sea necesario -->
 				</tbody>
 			</table>
@@ -213,7 +224,7 @@ th {
 <script setup>
 import iconsSvg from '../components/iconsSvg.vue';
 import { fecha, info, area, nombres, contacto, documento, email, estado, terminos, mensaje, observaciones } from '../components/svg';
-import { cargarDatosPqr } from '../fetch.query';
+import { cargarDatosPqr } from '../../fetch.query';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
@@ -416,6 +427,17 @@ const openPDFView = () => {
 						</div>
 					</th>
 					<td colspan="2">${pqrs.value.mensaje}</td>
+				</tr>
+				<tr>
+					<th colspan="2">
+						<div class="icons">
+							${observaciones}
+							<span>
+								MENSAJE
+							</span>
+						</div>
+					</th>
+					<td colspan="2">${pqrs.value.observaciones}</td>
 				</tr>
 				<!-- Agrega más filas según sea necesario -->
 			</tbody>
