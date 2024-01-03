@@ -2,7 +2,7 @@
 	<div class="">
 		<div class="input-group has-validation">
 			<div class="form-floating ">
-				<input :type="type" class="form-control background_color_inp" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" :id="inputId" :placeholder="placeholder" :required="true" :readonly="editable" :disabled="editable">
+				<input :type="type" class="form-control background_color_inp" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" :id="inputId" :placeholder="placeholder" :required="true" :readonly="editable" :disabled="editable" :maxlength="max">
 				<label :for="inputId">{{ label }}</label>
 			</div>
 			<div class="invalid-feedback">
@@ -22,6 +22,7 @@ const props = defineProps({
 	label: String,
 	errorMessage: String,
 	editable: Boolean,
+	max: Number
 
 })
 defineEmits(['update:modelValue'])

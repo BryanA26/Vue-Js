@@ -213,7 +213,7 @@ th {
 <script setup>
 import iconsSvg from '../../../components/iconsSvg.vue';
 import { fecha, info, area, nombres, contacto, documento, email, estado, terminos, mensaje, observaciones } from '../../../components/svg';
-import { cargarDatosPqr } from '/fetch.query.js';
+import { cargarDatosPqr } from '../../../fetch.query.js';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 

@@ -93,7 +93,7 @@ const routes_crinmo = [
 	},
 	{
 		path: '/mantenimientos/exportPDF/:id',
-		name: 'ExportarMatenimento',
+		name: 'ExportarMantenimiento',
 		component: ExportarMantenimiento,
 	},
 	{

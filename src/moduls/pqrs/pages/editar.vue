@@ -117,7 +117,7 @@ import inputText from '../../../components/inputText.vue';
 import selectS from '../../../components/select-s.vue';
 import containerText from '../../../components/containerText.vue';
 import { ref, onMounted } from 'vue';
-import { cargarDatosPqr, actualizarPqr } from '/fetch.query';
+import { cargarDatosPqr, actualizarPqr } from '../../../fetch.query.js';
 import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter()
