@@ -1,9 +1,7 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import Home from '../pages/Home.vue'
 import Details from '../pages/Details.vue'
-import Listar from '../moduls/pqrs/pages/Listar.vue'
 import crear from '../moduls/pqrs/pages/crear.vue'
-import editar from '../moduls/pqrs/pages//editar.vue'
 import Exportar from '../moduls/pqrs/pages/exportPDF.vue'
 import ExportarMantenimiento from '../moduls/mantenimientos/pages/exportPDF.vue'
 import crearMantenimiento from '../moduls/mantenimientos/pages/crear.vue'
@@ -21,19 +19,9 @@ const routes = [
 		component: Details
 	},
 	{
-		path: '/Listar/',
-		name: 'Listar',
-		component: Listar
-	},
-	{
 		path: '/crear/',
 		name: 'Crear',
 		component: crear
-	},
-	{
-		path: '/editar/:id',
-		name: 'Editar',
-		component: editar
 	},
 	{
 		path: '/exportPDF/:id',
@@ -76,11 +64,6 @@ const routes_portada = [
 ]
 
 const routes_crinmo = [
-	{
-		path: '/editar/:id',
-		name: 'Editar',
-		component: editar
-	},
 	{
 		path: '/',
 		name: 'Home',
