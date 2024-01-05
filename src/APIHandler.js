@@ -43,24 +43,6 @@ export default class APIHandler {
 			throw new Error('Hubo un problema al cargar los datos');
 		}
 	}
-	async actualizar(datosEnviar) {
-		const options = {
-			method: 'PUT',
-			headers: {
-				Authorization: this.apiToken,
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(datosEnviar),
-		};
-
-		try {
-			const response = await fetch(this.apiUrl, options);
-			const data = await response.json();
-		} catch (error) {
-			console.error('Error al enviar la solicitud de actualización:', error);
-			throw new Error('Hubo un problema al enviar la solicitud de actualización');
-		}
-	}
 
 	async loadInitialData(pagina = 1) {
 		const initialLoadAmount = 10;
@@ -122,32 +104,73 @@ export default class APIHandler {
 		}
 	}
 
-	async uploadAndGetUrl(file, inputFileUrl) {
-		const formData = new FormData();
-		formData.append('archivo', file);
 
+
+	async fetchPut(url, datosActualizar) {
 		const options = {
-			method: 'POST',
-			headers: {
-				Authorization: this.apiToken,
-			},
-			body: formData,
+		  method: 'PUT',
+		  headers: {
+			Authorization: this.apiToken,
+			'Content-Type': 'application/json',
+		  },
+		  body: JSON.stringify(datosActualizar),
 		};
 
 		try {
-			// Subir el archivo utilizando el método fetch
-			const uploadResponse = await fetch(inputFileUrl, options);
-			if (!uploadResponse.ok) {
-				throw new Error(`Error en la solicitud: ${uploadResponse.status} ${uploadResponse.statusText}`);
-			}
-
-			const responseData = await uploadResponse.json();
-			return responseData.url; // Suponiendo que el servidor devuelve la URL del archivo
+		  const response = await fetch(url, options);
+		  if (response.ok) {
+			return true;
+		  } else {
+			console.error('Error al actualizar el campo url_img en el servidor:', response.statusText);
+			return false;
+		  }
 		} catch (error) {
-			console.error('Error al cargar el archivo:', error);
-			throw new Error('Hubo un problema al cargar el archivo');
+		  console.error('Error al enviar la solicitud:', error);
+		  throw new Error('Hubo un problema al enviar la solicitud');
 		}
-	}
+	  }
 
 
+	  async uploadFile(uploadUrl, formData) {
+		const uploadOptions = {
+		  method: 'POST',
+		  body: formData,
+		  headers: {
+			Authorization: this.apiToken,
+		  }
+		};
+
+		try {
+		  const uploadResponse = await fetch(uploadUrl, uploadOptions);
+
+		  if (!uploadResponse.ok) {
+			const errorMessage = await uploadResponse.text();
+			console.error('Error al subir el archivo:', errorMessage || uploadResponse.statusText);
+			throw new Error(`Error al subir el archivo: ${errorMessage || uploadResponse.statusText}`);
+		  }
+
+		  const responseText = await uploadResponse.text();
+		  return responseText; // Retornar la respuesta sin procesar
+		} catch (error) {
+		  console.error('Error en la subida del archivo:', error.message);
+		  throw new Error(`Error en la subida del archivo: ${error.message}`);
+		}
+	  };
+
+
+}
+
+export const entidades = {
+	maintenance: "maintenance",
+	customer: "customer",
+	category: "category",
+	headquarter: "headquarter",
+}
+
+export const actions = {
+	getAll : "getAll",
+	getBy : "getBy",
+	create : "create",
+	update : "update",
+	uploadImageMaintenance : "uploadImageMaintenance",
 }

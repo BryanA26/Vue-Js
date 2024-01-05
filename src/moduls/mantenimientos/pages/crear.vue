@@ -58,11 +58,11 @@ import FileInput from '../../../components/inputFile.vue';
 import apiHandler from '../APIHandler.mantenimientos';
 import { CATEGORY_URL, HEADQUARTER_URL, UPLOAD_URL, GETBY_URL2, UPDATE_URL } from '../APIHandler.mantenimientos';
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { ref, resolveDirective } from 'vue';
 import { onMounted } from 'vue';
+
 const router = useRouter()
 const enviando = ref(false)
-
 
 const mantenimiento = ref({
 	headquarter: "",
@@ -91,6 +91,7 @@ const docOptions = ref([
 
 const categoriaOptions = ref([]);
 const reportOptions = ref([]);
+
 const fetchDataFromAPI = async (url, optionsRef) => {
 	try {
 		const responseData = await apiHandler.getRequest(url);
@@ -105,11 +106,10 @@ const fetchDataFromAPI = async (url, optionsRef) => {
 };
 
 onMounted(async () => {
-	await fetchDataFromAPI(HEADQUARTER_URL, reportOptions);
-});
-
-onMounted(async () => {
-	await fetchDataFromAPI(CATEGORY_URL, categoriaOptions);
+	await Promise.all([
+		fetchDataFromAPI(HEADQUARTER_URL, reportOptions),
+		fetchDataFromAPI(CATEGORY_URL, categoriaOptions)
+	]);
 });
 
 const buscarClienteExistente = async (document, email) => {
@@ -143,7 +143,7 @@ const crearcustomer = async () => {
 			};
 
 
-			const customerCreado = await apiHandler.fetchPost(datoscustomer, apiHandler.secondaryUrl);
+			const customerCreado = await apiHandler.fetchPost(datoscustomer, apiHandler.azureWebAppApiEndpointCreateCustomer);
 			return customerCreado.id;
 		}
 	} catch (error) {
@@ -152,91 +152,74 @@ const crearcustomer = async () => {
 	}
 };
 const crearMantenimiento = async () => {
-  try {
-    const customerId = await crearcustomer();
+	try {
+		if (!enviando.value) { // Evitar múltiples envíos si ya se está enviando
+			enviando.value = true; // Cambiar el estado a "enviando"
 
-    const datosEnviar = {
-      address_maintenance: mantenimiento.value.address_maintenance,
-      description: mantenimiento.value.description.toUpperCase(),
-      id_headquarter: mantenimiento.value.headquarter,
-      id_category: mantenimiento.value.category,
-      id_customer: { id: customerId },
-      id_status: { id: 3 },
-    };
+			const customerId = await crearcustomer();
 
+			const datosEnviar = {
+				address_maintenance: mantenimiento.value.address_maintenance,
+				description: mantenimiento.value.description.toUpperCase(),
+				id_headquarter: mantenimiento.value.headquarter,
+				id_category: mantenimiento.value.category,
+				id_customer: { id: customerId },
+				id_status: { id: 3 },
+			};
 
-    const mantenimientoCreado = await apiHandler.fetchPost(datosEnviar);
+			const mantenimientoCreado = await apiHandler.fetchPost(datosEnviar);
 
-    if (!mantenimientoCreado || mantenimientoCreado.id === undefined) {
-      throw new Error('El nuevo mantenimiento no fue creado correctamente o no tiene un ID válido.');
-    }
-    const idMantenimiento = mantenimientoCreado.id; // Define idMantenimiento aquí
+			if (!mantenimientoCreado || mantenimientoCreado.id === undefined) {
+				throw new Error('El nuevo mantenimiento no fue creado correctamente o no tiene un ID válido.');
+			}
+			const idMantenimiento = mantenimientoCreado.id; // Define idMantenimiento aquí
 
-    // Redirigir si el mantenimiento se creó exitosamente
-    if (mantenimientoCreado && mantenimientoCreado.id !== undefined) {
-
-      // Actualizar el campo url_img en el registro del mantenimiento
-      mantenimiento.value.url_img = `URL de la imagen del mantenimiento ${mantenimientoCreado.id}`;
-
-      router.push({ name: 'ExportarMantenimiento', params: { id: mantenimientoCreado.id } });
-
-      // Habilitar la subida de la imagen después de que el mantenimiento se haya creado
-      await handleFileChange(idMantenimiento);
-    } else {
-      throw new Error('El nuevo mantenimiento no fue creado correctamente o no tiene un ID válido.');
-    }
-  } catch (error) {
-    console.error('Error al realizar el proceso:', error);
-    // Manejar errores generales
-  }
+			// Redirigir si el mantenimiento se creó exitosamente
+			if (mantenimientoCreado && mantenimientoCreado.id !== undefined) {
+				mantenimiento.value.url_img = `URL de la imagen del mantenimiento ${mantenimientoCreado.id}`;
+				router.push({ name: 'ExportarMantenimiento', params: { id: mantenimientoCreado.id } });
+				await handleFileChange(idMantenimiento);
+			} else {
+				throw new Error('El nuevo mantenimiento no fue creado correctamente o no tiene un ID válido.');
+			}
+		}
+	} catch (error) {
+		console.error('Error al realizar el proceso:', error);
+		// Manejar errores generales
+	} finally {
+		enviando.value = false; // Restablecer el estado del botón después de completar la operación
+	}
 };
-
-const handleFileChange = async (idMantenimiento) => {
+const handleFileChange = async (idMantenimiento, apiToken) => {
   try {
-    const selectedFile = document.getElementById('fileInput').files[0]; // Obtener el archivo seleccionado
+    const selectedFile = document.getElementById('fileInput').files[0];
 
     if (selectedFile) {
-
       const formData = new FormData();
       formData.append('archivo', selectedFile);
 
-      const response = await fetch(`${UPLOAD_URL}/archivo/${idMantenimiento}`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Authorization': apiHandler.apiToken
-        }
-      });
+      const uploadUrl = `${UPLOAD_URL}/archivo/${idMantenimiento}`;
 
-      if (response.ok) {
-        const url = await response.json();
+      // Subir archivo
+      const uploadResponse = await apiHandler.uploadFile(uploadUrl, formData, apiToken);
+
+      if (uploadResponse) {
 
         // Actualizar el campo url_img con la URL del archivo subido
-        mantenimiento.value.url_img = url; // Actualiza según la estructura de tu objeto
+        mantenimiento.value.url_img = uploadResponse; // Actualiza según la estructura de tu objeto
 
-        // Crear objeto con el campo url_img para actualizar en el servidor
-        const datosActualizar = {
-          url_img: url,
-        };
 
-        // Realizar la actualización del campo url_img en el servidor
-        const options = {
-          method: 'PUT',
-          headers: {
-            'Authorization': apiHandler.apiToken,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(datosActualizar),
-        };
+        const updateUrl = `${UPDATE_URL}/${idMantenimiento}`;
 
-        const updateResponse = await fetch(`${UPDATE_URL}/${idMantenimiento}`, options);
+        // Actualizar en el servidor
+        const updateResponse = await apiHandler.fetchPut(updateUrl, { url_img: uploadResponse }, apiToken);
 
-        if (updateResponse.ok) {
+        if (updateResponse) {
         } else {
-          console.error('Error al actualizar el campo url_img en el servidor:', updateResponse.statusText);
+          console.error('Error al actualizar el campo url_img en el servidor');
         }
       } else {
-        console.error('Error al subir el archivo:', response.statusText);
+        console.error('Error al subir el archivo');
       }
     }
   } catch (error) {

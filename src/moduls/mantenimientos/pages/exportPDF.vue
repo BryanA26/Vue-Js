@@ -80,7 +80,7 @@
 								</span>
 							</div>
 						</th>
-						<td  v-if="mantenimiento.id_customer">{{ mantenimiento.id_customer.phone }}</td>
+						<td  v-if="mantenimiento.id_customer">{{ mantenimiento.id_customer.celphone }}</td>
 					</tr>
 					<tr>
 						<th class="th_row_icon_spn">
@@ -232,7 +232,7 @@ const mantenimiento = ref({
 	document_type: "",
 	document: "",
 	fullname: "",
-	phone: "",
+	celphone: "",
 	email: "",
 	address: "",
 	category: "",
@@ -423,7 +423,7 @@ const openPDFView = () => {
 							</span>
 						</div>
 					</th>
-					<td>${mantenimiento.value.id_customer.phone}</td>
+					<td>${mantenimiento.value.id_customer.celphone}</td>
 				</tr>
 				<tr>
 					<th>
