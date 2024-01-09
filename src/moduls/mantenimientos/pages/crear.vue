@@ -99,6 +99,11 @@ const fetchDataFromAPI = async (url, optionsRef) => {
   try {
     loading.value = true;
     const responseData = await apiHandler.getRequest(url);
+
+    if (!responseData || responseData.length === 0) {
+      throw new Error('No se encontraron datos');
+    }
+
     const formattedData = responseData.map((item) => ({
       value: item.id,
       label: item.headquarter || item.category,
@@ -120,9 +125,10 @@ onMounted(async () => {
     ]);
   } catch (error) {
     console.error('Error al cargar datos iniciales:', error);
-    alert('Hubo un problema al cargar los datos iniciales. Por favor, inténtalo de nuevo más tarde.');
+    console.error('No se encontraron datos iniciales. Por favor, inténtalo de nuevo más tarde.');
   }
 });
+
 
 const buscarClienteExistente = async (document, email) => {
 	try {
