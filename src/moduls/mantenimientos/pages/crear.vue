@@ -7,8 +7,10 @@
 			</div>
 			<div class="card-body my-2">
 				<form v-on:submit.prevent="crearMantenimiento">
+					<div v-if="loading" class="loading-text">Cargando datos...</div>
 
-					<selectS inputId="'floatingSelect'" :selected-value="mantenimiento.headquarter" :label="'Reportar a *'" :options="reportOptions" @update:select-value="mantenimiento.headquarter = $event" :editable="true" /><br>
+
+					<selectS inputId="'floatingSelect'" :selected-value="mantenimiento.headquarter" :label="'Reportar a *'" :options="reportOptions" @update:select-value="mantenimiento.headquarter = $event" :editable="!loading" /><br>
 					<selectS inputId="'floatingSelect'" :selected-value="mantenimiento.document_type" :label="'Tipo de Identificación *'" :options="docOptions" @update:select-value="mantenimiento.document_type = $event" :editable="true" />
 
 					<div class="my-3">
@@ -29,7 +31,7 @@
 					</div>
 
 					<div class="my-3">
-						<selectS inputId="'floatingSelect'" :selected-value="mantenimiento.category" :label="'Categoria *'" :options="categoriaOptions" @update:select-value="mantenimiento.category = $event" :editable="true" />
+						<selectS inputId="'floatingSelect'" :selected-value="mantenimiento.category" :label="'Categoria *'" :options="categoriaOptions" @update:select-value="mantenimiento.category = $event" :editable="!loading" />
 					</div>
 
 					<div class="container">
@@ -63,6 +65,7 @@ import { onMounted } from 'vue';
 
 const router = useRouter()
 const enviando = ref(false)
+const loading = ref(false)
 
 const mantenimiento = ref({
 	headquarter: "",
@@ -93,23 +96,32 @@ const categoriaOptions = ref([]);
 const reportOptions = ref([]);
 
 const fetchDataFromAPI = async (url, optionsRef) => {
-	try {
-		const responseData = await apiHandler.getRequest(url);
-		const formattedData = responseData.map((item) => ({
-			value: item.id,
-			label: item.headquarter || item.category,
-		}));
-		optionsRef.value = formattedData;
-	} catch (error) {
-		console.error('Hubo un error al obtener los datos:', error);
-	}
+  try {
+    loading.value = true;
+    const responseData = await apiHandler.getRequest(url);
+    const formattedData = responseData.map((item) => ({
+      value: item.id,
+      label: item.headquarter || item.category,
+    }));
+    optionsRef.value = formattedData;
+  } catch (error) {
+    console.error('Hubo un error al obtener los datos:', error);
+    throw error;
+  } finally {
+    loading.value = false;
+  }
 };
 
 onMounted(async () => {
-	await Promise.all([
-		fetchDataFromAPI(HEADQUARTER_URL, reportOptions),
-		fetchDataFromAPI(CATEGORY_URL, categoriaOptions)
-	]);
+  try {
+    await Promise.all([
+      fetchDataFromAPI(HEADQUARTER_URL, reportOptions),
+      fetchDataFromAPI(CATEGORY_URL, categoriaOptions)
+    ]);
+  } catch (error) {
+    console.error('Error al cargar datos iniciales:', error);
+    alert('Hubo un problema al cargar los datos iniciales. Por favor, inténtalo de nuevo más tarde.');
+  }
 });
 
 const buscarClienteExistente = async (document, email) => {
@@ -148,48 +160,47 @@ const crearcustomer = async () => {
 		}
 	} catch (error) {
 		console.error('Error al crear o buscar el cliente:', error);
-		throw new Error('Hubo un problema al crear o buscar el cliente');
+		alert('Hubo un problema al crear o buscar el cliente. Por favor, inténtalo de nuevo más tarde.');
+		throw error;
 	}
 };
 const crearMantenimiento = async () => {
-	try {
-		if (!enviando.value) { // Evitar múltiples envíos si ya se está enviando
-			enviando.value = true; // Cambiar el estado a "enviando"
+  try {
+    if (!enviando.value) {
+      enviando.value = true;
 
-			const customerId = await crearcustomer();
+      const customerId = await crearcustomer();
 
-			const datosEnviar = {
-				address_maintenance: mantenimiento.value.address_maintenance,
-				description: mantenimiento.value.description.toUpperCase(),
-				id_headquarter: mantenimiento.value.headquarter,
-				id_category: mantenimiento.value.category,
-				id_customer: { id: customerId },
-				id_status: { id: 3 },
-			};
+      const datosEnviar = {
+        address_maintenance: mantenimiento.value.address_maintenance,
+        description: mantenimiento.value.description.toUpperCase(),
+        id_headquarter: mantenimiento.value.headquarter,
+        id_category: mantenimiento.value.category,
+        id_customer: { id: customerId },
+        id_status: { id: 3 },
+      };
 
-			const mantenimientoCreado = await apiHandler.fetchPost(datosEnviar);
+      const mantenimientoCreado = await apiHandler.fetchPost(datosEnviar);
 
-			if (!mantenimientoCreado || mantenimientoCreado.id === undefined) {
-				throw new Error('El nuevo mantenimiento no fue creado correctamente o no tiene un ID válido.');
-			}
-			const idMantenimiento = mantenimientoCreado.id; // Define idMantenimiento aquí
+      if (!mantenimientoCreado || mantenimientoCreado.id === undefined) {
+        throw new Error('El nuevo mantenimiento no fue creado correctamente o no tiene un ID válido.');
+      }
 
-			// Redirigir si el mantenimiento se creó exitosamente
-			if (mantenimientoCreado && mantenimientoCreado.id !== undefined) {
-				mantenimiento.value.url_img = `URL de la imagen del mantenimiento ${mantenimientoCreado.id}`;
-				router.push({ name: 'ExportarMantenimiento', params: { id: mantenimientoCreado.id } });
-				await handleFileChange(idMantenimiento);
-			} else {
-				throw new Error('El nuevo mantenimiento no fue creado correctamente o no tiene un ID válido.');
-			}
-		}
-	} catch (error) {
-		console.error('Error al realizar el proceso:', error);
-		// Manejar errores generales
-	} finally {
-		enviando.value = false; // Restablecer el estado del botón después de completar la operación
-	}
+      const idMantenimiento = mantenimientoCreado.id;
+
+      mantenimiento.value.url_img = `URL de la imagen del mantenimiento ${idMantenimiento}`;
+      router.push({ name: 'ExportarMantenimiento', params: { id: idMantenimiento } });
+      await handleFileChange(idMantenimiento);
+    }
+  } catch (error) {
+    console.error('Error al crear el mantenimiento:', error);
+    alert('Hubo un problema al crear el mantenimiento. Por favor, inténtalo de nuevo más tarde.');
+    throw error;
+  } finally {
+    enviando.value = false;
+  }
 };
+
 const handleFileChange = async (idMantenimiento, apiToken) => {
   try {
     const selectedFile = document.getElementById('fileInput').files[0];
