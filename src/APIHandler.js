@@ -108,54 +108,54 @@ export default class APIHandler {
 
 	async fetchPut(url, datosActualizar) {
 		const options = {
-		  method: 'PUT',
-		  headers: {
-			Authorization: this.apiToken,
-			'Content-Type': 'application/json',
-		  },
-		  body: JSON.stringify(datosActualizar),
+			method: 'PUT',
+			headers: {
+				Authorization: this.apiToken,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(datosActualizar),
 		};
 
 		try {
-		  const response = await fetch(url, options);
-		  if (response.ok) {
-			return true;
-		  } else {
-			console.error('Error al actualizar el campo url_img en el servidor:', response.statusText);
-			return false;
-		  }
+			const response = await fetch(url, options);
+			if (response.ok) {
+				return true;
+			} else {
+				console.error('Error al actualizar el campo url_img en el servidor:', response.statusText);
+				return false;
+			}
 		} catch (error) {
-		  console.error('Error al enviar la solicitud:', error);
-		  throw new Error('Hubo un problema al enviar la solicitud');
+			console.error('Error al enviar la solicitud:', error);
+			throw new Error('Hubo un problema al enviar la solicitud');
 		}
-	  }
+	}
 
 
-	  async uploadFile(uploadUrl, formData) {
+	async uploadFile(uploadUrl, formData) {
 		const uploadOptions = {
-		  method: 'POST',
-		  body: formData,
-		  headers: {
-			Authorization: this.apiToken,
-		  }
+			method: 'POST',
+			body: formData,
+			headers: {
+				Authorization: this.apiToken,
+			}
 		};
 
 		try {
-		  const uploadResponse = await fetch(uploadUrl, uploadOptions);
+			const uploadResponse = await fetch(uploadUrl, uploadOptions);
 
-		  if (!uploadResponse.ok) {
-			const errorMessage = await uploadResponse.text();
-			console.error('Error al subir el archivo:', errorMessage || uploadResponse.statusText);
-			throw new Error(`Error al subir el archivo: ${errorMessage || uploadResponse.statusText}`);
-		  }
+			if (!uploadResponse.ok) {
+				const errorMessage = await uploadResponse.text();
+				console.error('Error al subir el archivo:', errorMessage || uploadResponse.statusText);
+				throw new Error(`Error al subir el archivo: ${errorMessage || uploadResponse.statusText}`);
+			}
 
-		  const responseText = await uploadResponse.text();
-		  return responseText; // Retornar la respuesta sin procesar
+			const responseText = await uploadResponse.text();
+			return responseText; // Retornar la respuesta sin procesar
 		} catch (error) {
-		  console.error('Error en la subida del archivo:', error.message);
-		  throw new Error(`Error en la subida del archivo: ${error.message}`);
+			console.error('Error en la subida del archivo:', error.message);
+			throw new Error(`Error en la subida del archivo: ${error.message}`);
 		}
-	  };
+	};
 
 
 }
@@ -168,9 +168,9 @@ export const entidades = {
 }
 
 export const actions = {
-	getAll : "getAll",
-	getBy : "getBy",
-	create : "create",
-	update : "update",
-	uploadImageMaintenance : "uploadImageMaintenance",
+	getAll: "getAll",
+	getBy: "getBy",
+	create: "create",
+	update: "update",
+	uploadImageMaintenance: "uploadImageMaintenance",
 }

@@ -57,8 +57,7 @@ import ContainerText from '../../../components/containerText.vue';
 import InputText from '../../../components/inputText.vue';
 import selectS from '../../../components/select-s.vue';
 import FileInput from '../../../components/inputFile.vue';
-import apiHandler from '../APIHandler.mantenimientos';
-import { CATEGORY_URL, HEADQUARTER_URL, UPLOAD_URL, GETBY_URL2, UPDATE_URL } from '../APIHandler.mantenimientos';
+import maintenance_apiHandler, { actions, customer_base_endpoint, category_base_endpoint, headquarter_base_endpoint, maintenance_base_endpoint } from '../APIHandler.mantenimientos';
 import { useRouter } from 'vue-router';
 import { ref, resolveDirective } from 'vue';
 import { onMounted } from 'vue';
@@ -96,44 +95,44 @@ const categoriaOptions = ref([]);
 const reportOptions = ref([]);
 
 const fetchDataFromAPI = async (url, optionsRef) => {
-  try {
-    loading.value = true;
-    const responseData = await apiHandler.getRequest(url);
+	try {
+		loading.value = true;
+		const responseData = await maintenance_apiHandler.getRequest(url);
 
-    if (!responseData || responseData.length === 0) {
-      throw new Error('No se encontraron datos');
-    }
+		if (!responseData || responseData.length === 0) {
+			throw new Error('No se encontraron datos');
+		}
 
-    const formattedData = responseData.map((item) => ({
-      value: item.id,
-      label: item.headquarter || item.category,
-    }));
-    optionsRef.value = formattedData;
-  } catch (error) {
-    console.error('Hubo un error al obtener los datos:', error);
-    throw error;
-  } finally {
-    loading.value = false;
-  }
+		const formattedData = responseData.map((item) => ({
+			value: item.id,
+			label: item.headquarter || item.category,
+		}));
+		optionsRef.value = formattedData;
+	} catch (error) {
+		console.error('Hubo un error al obtener los datos:', error);
+		throw error;
+	} finally {
+		loading.value = false;
+	}
 };
 
 onMounted(async () => {
-  try {
-    await Promise.all([
-      fetchDataFromAPI(HEADQUARTER_URL, reportOptions),
-      fetchDataFromAPI(CATEGORY_URL, categoriaOptions)
-    ]);
-  } catch (error) {
-    console.error('Error al cargar datos iniciales:', error);
-    console.error('No se encontraron datos iniciales. Por favor, inténtalo de nuevo más tarde.');
-  }
+	try {
+		await Promise.all([
+			fetchDataFromAPI(headquarter_base_endpoint + actions.getAll, reportOptions),
+			fetchDataFromAPI(category_base_endpoint + actions.getAll, categoriaOptions)
+		]);
+	} catch (error) {
+		console.error('Error al cargar datos iniciales:', error);
+		console.error('No se encontraron datos iniciales. Por favor, inténtalo de nuevo más tarde.');
+	}
 });
 
 
 const buscarClienteExistente = async (document, email) => {
 	try {
-		const endpoint = `${GETBY_URL2}/?document=${document}&email=${email}`;
-		const clienteExistente = await apiHandler.getRequest(endpoint);
+		const endpoint = `${customer_base_endpoint}/${actions.getBy}/?document=${document}&email=${email}`;
+		const clienteExistente = await maintenance_apiHandler.getRequest(endpoint);
 
 		return clienteExistente;
 	} catch (error) {
@@ -161,7 +160,7 @@ const crearcustomer = async () => {
 			};
 
 
-			const customerCreado = await apiHandler.fetchPost(datoscustomer, apiHandler.azureWebAppApiEndpointCreateCustomer);
+			const customerCreado = await maintenance_apiHandler.fetchPost(datoscustomer, customer_base_endpoint + "/" + actions.create);
 			return customerCreado.id;
 		}
 	} catch (error) {
@@ -171,77 +170,77 @@ const crearcustomer = async () => {
 	}
 };
 const crearMantenimiento = async () => {
-  try {
-    if (!enviando.value) {
-      enviando.value = true;
+	try {
+		if (!enviando.value) {
+			enviando.value = true;
 
-      const customerId = await crearcustomer();
+			const customerId = await crearcustomer();
 
-      const datosEnviar = {
-        address_maintenance: mantenimiento.value.address_maintenance,
-        description: mantenimiento.value.description.toUpperCase(),
-        id_headquarter: mantenimiento.value.headquarter,
-        id_category: mantenimiento.value.category,
-        id_customer: { id: customerId },
-        id_status: { id: 3 },
-      };
+			const datosEnviar = {
+				address_maintenance: mantenimiento.value.address_maintenance,
+				description: mantenimiento.value.description.toUpperCase(),
+				id_headquarter: mantenimiento.value.headquarter,
+				id_category: mantenimiento.value.category,
+				id_customer: { id: customerId },
+				id_status: { id: 3 },
+			};
 
-      const mantenimientoCreado = await apiHandler.fetchPost(datosEnviar);
+			const mantenimientoCreado = await maintenance_apiHandler.fetchPost(datosEnviar, maintenance_base_endpoint + "/" + actions.create);
 
-      if (!mantenimientoCreado || mantenimientoCreado.id === undefined) {
-        throw new Error('El nuevo mantenimiento no fue creado correctamente o no tiene un ID válido.');
-      }
+			if (!mantenimientoCreado || mantenimientoCreado.id === undefined) {
+				throw new Error('El nuevo mantenimiento no fue creado correctamente o no tiene un ID válido.');
+			}
 
-      const idMantenimiento = mantenimientoCreado.id;
+			const idMantenimiento = mantenimientoCreado.id;
 
-      mantenimiento.value.url_img = `URL de la imagen del mantenimiento ${idMantenimiento}`;
-      router.push({ name: 'ExportarMantenimiento', params: { id: idMantenimiento } });
-      await handleFileChange(idMantenimiento);
-    }
-  } catch (error) {
-    console.error('Error al crear el mantenimiento:', error);
-    alert('Hubo un problema al crear el mantenimiento. Por favor, inténtalo de nuevo más tarde.');
-    throw error;
-  } finally {
-    enviando.value = false;
-  }
+			mantenimiento.value.url_img = `URL de la imagen del mantenimiento ${idMantenimiento}`;
+			router.push({ name: 'ExportarMantenimiento', params: { id: idMantenimiento } });
+			await handleFileChange(idMantenimiento);
+		}
+	} catch (error) {
+		console.error('Error al crear el mantenimiento:', error);
+		alert('Hubo un problema al crear el mantenimiento. Por favor, inténtalo de nuevo más tarde.');
+		throw error;
+	} finally {
+		enviando.value = false;
+	}
 };
 
-const handleFileChange = async (idMantenimiento, apiToken) => {
-  try {
-    const selectedFile = document.getElementById('fileInput').files[0];
+const handleFileChange = async (idMantenimiento) => {
+	try {
+		const selectedFile = document.getElementById('fileInput').files[0];
 
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append('archivo', selectedFile);
+		if (selectedFile) {
+			const formData = new FormData();
+			formData.append('archivo', selectedFile);
 
-      const uploadUrl = `${UPLOAD_URL}/archivo/${idMantenimiento}`;
+			const uploadUrl = `${maintenance_base_endpoint}/${actions.uploadImageMaintenance}/archivo/${idMantenimiento}`;
 
-      // Subir archivo
-      const uploadResponse = await apiHandler.uploadFile(uploadUrl, formData, apiToken);
+			// Subir archivo
+			const uploadResponse = await maintenance_apiHandler.uploadFile(uploadUrl, formData);
 
-      if (uploadResponse) {
+			if (uploadResponse) {
 
-        // Actualizar el campo url_img con la URL del archivo subido
-        mantenimiento.value.url_img = uploadResponse; // Actualiza según la estructura de tu objeto
+				// Actualizar el campo url_img con la URL del archivo subido
+				mantenimiento.value.url_img = uploadResponse; // Actualiza según la estructura de tu objeto
 
 
-        const updateUrl = `${UPDATE_URL}/${idMantenimiento}`;
+				const updateUrl = `${maintenance_base_endpoint}/${actions.update}/${idMantenimiento}`;
 
-        // Actualizar en el servidor
-        const updateResponse = await apiHandler.fetchPut(updateUrl, { url_img: uploadResponse }, apiToken);
+				// Actualizar en el servidor
+				const updateResponse = await maintenance_apiHandler.fetchPut(updateUrl, { url_img: uploadResponse });
 
-        if (updateResponse) {
-        } else {
-          console.error('Error al actualizar el campo url_img en el servidor');
-        }
-      } else {
-        console.error('Error al subir el archivo');
-      }
-    }
-  } catch (error) {
-    console.error('Error en la subida del archivo:', error);
-  }
+				if (updateResponse) {
+				} else {
+					console.error('Error al actualizar el campo url_img en el servidor');
+				}
+			} else {
+				console.error('Error al subir el archivo');
+			}
+		}
+	} catch (error) {
+		console.error('Error en la subida del archivo:', error);
+	}
 };
 
 </script>

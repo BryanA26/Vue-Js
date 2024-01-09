@@ -1,26 +1,20 @@
-import APIHandler from '../../APIHandler';
-import { entidades, actions } from '../../APIHandler';
+import APIHandler, { entidades, actions } from '../../APIHandler';
 const BASE_URL = import.meta.env.VITE_BASE_URL
 
-const azureWebAppApiEndpointCreateMaintenance = `${BASE_URL}/${entidades.maintenance}/${actions.create}`;
-const azureWebAppApiEndpointCreateCustomer = `${BASE_URL}/${entidades.customer}/${actions.create}`
-const azureWebAppApiEndpointCreateCustomer_API_TOKEN = import.meta.env.VITE_API_TOKEN
+const maintenance_base_endpoint = `${BASE_URL}/${entidades.maintenance}/`;
+const customer_base_endpoint = `${BASE_URL}/${entidades.customer}/`
+const headquarter_base_endpoint = `${BASE_URL}/${entidades.headquarter}/`
+const category_base_endpoint = `${BASE_URL}/${entidades.category}/`
+const API_TOKEN = import.meta.env.VITE_API_TOKEN
 
-const apiHandler = new APIHandler(azureWebAppApiEndpointCreateMaintenance, azureWebAppApiEndpointCreateCustomer_API_TOKEN, azureWebAppApiEndpointCreateCustomer);
+const maintenance_apiHandler = new APIHandler(maintenance_base_endpoint, API_TOKEN);
 
-
-export const UPDATE_URL = `${BASE_URL}/${entidades.maintenance}/${actions.update}`
-
-export const UPLOAD_URL = `${BASE_URL}/${entidades.maintenance}/${actions.uploadImageMaintenance}`;
-
-export const CATEGORY_URL = `${BASE_URL}/${entidades.category}/${actions.getAll}`;
-
-export const HEADQUARTER_URL = `${BASE_URL}/${entidades.headquarter}/${actions.getAll}`
-
-
-export const GETBY_URL = `${BASE_URL}/${entidades.maintenance}/${actions.getBy}`;
-
-export const GETBY_URL2 = `${BASE_URL}/${entidades.customer}/${actions.getBy}`;
-
-export default apiHandler;
+export {
+	customer_base_endpoint,
+	headquarter_base_endpoint,
+	category_base_endpoint,
+	maintenance_base_endpoint,
+	actions,
+};
+export default maintenance_apiHandler;
 

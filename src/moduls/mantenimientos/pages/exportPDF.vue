@@ -70,7 +70,7 @@
 								</span>
 							</div>
 						</th>
-						<td  v-if="mantenimiento.id_customer">{{ mantenimiento.id_customer.fullname }}</td>
+						<td v-if="mantenimiento.id_customer">{{ mantenimiento.id_customer.fullname }}</td>
 
 						<th class="th_row_icon_spn">
 							<div class="icons">
@@ -80,7 +80,7 @@
 								</span>
 							</div>
 						</th>
-						<td  v-if="mantenimiento.id_customer">{{ mantenimiento.id_customer.celphone }}</td>
+						<td v-if="mantenimiento.id_customer">{{ mantenimiento.id_customer.celphone }}</td>
 					</tr>
 					<tr>
 						<th class="th_row_icon_spn">
@@ -102,7 +102,7 @@
 								</span>
 							</div>
 						</th>
-						<td   v-if="mantenimiento.id_customer" >{{ mantenimiento.id_customer.email }}</td>
+						<td v-if="mantenimiento.id_customer">{{ mantenimiento.id_customer.email }}</td>
 					</tr>
 					<tr>
 						<th class="th_row_icon_spn" colspan="1">
@@ -215,8 +215,7 @@ th {
 <script setup>
 import iconsSvg from '../../../components/iconsSvg.vue';
 import { fecha, info, area, nombres, contacto, documento, terminos, email, mensaje } from '../../../components/svg';
-import apiHandler from '../APIHandler.mantenimientos'
-import { GETBY_URL} from '../APIHandler.mantenimientos'
+import maintenance_apiHandler, { actions, maintenance_base_endpoint } from '../APIHandler.mantenimientos'
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
@@ -242,42 +241,42 @@ const mantenimiento = ref({
 })
 
 const created = async () => {
-    try {
-        const id = route.params.id;
-        const clienteId = route.params.Id;
-        const res = await apiHandler.cargarDatos(id, GETBY_URL);
+	try {
+		const id = route.params.id;
+		const clienteId = route.params.Id;
+		const res = await maintenance_apiHandler.cargarDatos(id, maintenance_base_endpoint + "/" + actions.getBy );
 
-        if (!res || !res.register_date) {
-            console.error('Los datos obtenidos de la API no contienen la fecha esperada.');
-            return;
-        }
+		if (!res || !res.register_date) {
+			console.error('Los datos obtenidos de la API no contienen la fecha esperada.');
+			return;
+		}
 
-        const fechaOriginal = new Date(res.register_date);
-        const utcTime = fechaOriginal.getTime();
-        const localOffset = fechaOriginal.getTimezoneOffset() * 60000;
-        const localTime = utcTime - localOffset;
-        const offset = 5 * 60 * 60 * 1000; // Diferencia horaria en milisegundos
-        const adjustedTime = localTime + offset;
+		const fechaOriginal = new Date(res.register_date);
+		const utcTime = fechaOriginal.getTime();
+		const localOffset = fechaOriginal.getTimezoneOffset() * 60000;
+		const localTime = utcTime - localOffset;
+		const offset = 5 * 60 * 60 * 1000; // Diferencia horaria en milisegundos
+		const adjustedTime = localTime + offset;
 
-        const fechaFormateada = new Date(adjustedTime).toLocaleString('es-ES', {
-            year: 'numeric',
-            month: 'long',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true,
-        });
+		const fechaFormateada = new Date(adjustedTime).toLocaleString('es-ES', {
+			year: 'numeric',
+			month: 'long',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			hour12: true,
+		});
 
-        // Actualizar los datos con la nueva fecha
-        res.register_date = fechaFormateada;
+		// Actualizar los datos con la nueva fecha
+		res.register_date = fechaFormateada;
 
-        // Asignar los datos actualizados a tu variable de mantenimiento.value
-        mantenimiento.value = { ...mantenimiento.value, ...res };
+		// Asignar los datos actualizados a tu variable de mantenimiento.value
+		mantenimiento.value = { ...mantenimiento.value, ...res };
 
-        // Resto de tu lógica...
-    } catch (error) {
-        console.error('Error al obtener o procesar los datos:', error);
-    }
+		// Resto de tu lógica...
+	} catch (error) {
+		console.error('Error al obtener o procesar los datos:', error);
+	}
 };
 
 
