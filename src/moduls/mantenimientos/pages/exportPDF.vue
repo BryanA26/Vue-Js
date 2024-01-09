@@ -244,7 +244,7 @@ const created = async () => {
 	try {
 		const id = route.params.id;
 		const clienteId = route.params.Id;
-		const res = await maintenance_apiHandler.cargarDatos(id, maintenance_base_endpoint + "/" + actions.getBy );
+		const res = await maintenance_apiHandler.cargarDatos(id, maintenance_base_endpoint + actions.getBy);
 
 		if (!res || !res.register_date) {
 			console.error('Los datos obtenidos de la API no contienen la fecha esperada.');
