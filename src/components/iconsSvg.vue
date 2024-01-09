@@ -67,47 +67,36 @@ import { computed } from 'vue';
 const props = defineProps({
 	fecha: {
 		type: String,
-		required: true
 	},
 	info: {
 		type: String,
-		required: true
 	},
 	Area: {
 		type: String,
-		required: true
 	},
 	nombres: {
 		type: String,
-		required: true
 	},
 	contacto: {
 		type: String,
-		required: true
 	},
 	documento: {
 		type: String,
-		required: true
 	},
 	email: {
 		type: String,
-		required: true
 	},
 	estado: {
 		type: String,
-		required: true
 	},
 	terminos: {
 		type: String,
-		required: true
 	},
 	mensaje: {
 		type: String,
-		required: true
 	},
 	observaciones: {
 		type: String,
-		required: true
 	}
 })
 
