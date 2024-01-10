@@ -7,12 +7,13 @@
 	<body>
 		<div class="table-responsive">
 			<table class="table table-bordered">
-				<thead class="thead-dark"><tr>
+				<thead class="thead-dark">
+					<tr>
 						<th colspan="4">
 							<div class="icons fecha_hora_span">
 								<!-- <iconsSvg fecha="true" /> -->
 								<span>FECHA Y HORA DE REGISTRO</span>
-								<div>{{ mantenimiento.fecha_registro }}</div>
+								<div>{{ mantenimiento.register_date }}</div>
 							</div>
 						</th>
 					</tr>
@@ -38,7 +39,7 @@
 								</span>
 							</div>
 						</th>
-						<td colspan="3">{{ mantenimiento.area_enc }}</td>
+						<td colspan="3" v-if="mantenimiento.id_headquarter">{{ mantenimiento.id_headquarter.headquarter }}</td>
 					</tr>
 					<tr>
 						<th class="th_row_icon_spn">
@@ -49,7 +50,7 @@
 								</span>
 							</div>
 						</th>
-						<td>{{ mantenimiento.estado }}</td>
+						<td v-if="mantenimiento.id_status">{{ mantenimiento.id_status.status }}</td>
 						<th class="th_row_icon_spn">
 							<div class="icons">
 								<iconsSvg terminos="true" />
@@ -58,7 +59,7 @@
 								</span>
 							</div>
 						</th>
-						<td>{{ mantenimiento.id_mantenimiento }}</td>
+						<td>{{ mantenimiento.id }}</td>
 					</tr>
 					<tr>
 						<th class="th_row_icon_spn">
@@ -69,7 +70,7 @@
 								</span>
 							</div>
 						</th>
-						<td>{{ mantenimiento.nombres_apellidos }}</td>
+						<td v-if="mantenimiento.id_customer">{{ mantenimiento.id_customer.fullname }}</td>
 
 						<th class="th_row_icon_spn">
 							<div class="icons">
@@ -79,7 +80,7 @@
 								</span>
 							</div>
 						</th>
-						<td>{{ mantenimiento.tel }}</td>
+						<td v-if="mantenimiento.id_customer">{{ mantenimiento.id_customer.celphone }}</td>
 					</tr>
 					<tr>
 						<th class="th_row_icon_spn">
@@ -90,8 +91,8 @@
 								</span>
 							</div>
 						</th>
-						<td>{{ mantenimiento.tipo_doc }} -
-							{{ mantenimiento.identificacion }}
+						<td v-if="mantenimiento.id_customer">
+							{{ mantenimiento.id_customer.document_type }} - {{ mantenimiento.id_customer.document }}
 						</td>
 						<th class="th_row_icon_spn">
 							<div class="icons">
@@ -101,7 +102,7 @@
 								</span>
 							</div>
 						</th>
-						<td>{{ mantenimiento.email }}</td>
+						<td v-if="mantenimiento.id_customer">{{ mantenimiento.id_customer.email }}</td>
 					</tr>
 					<tr>
 						<th class="th_row_icon_spn" colspan="1">
@@ -112,18 +113,7 @@
 								</span>
 							</div>
 						</th>
-						<td colspan="3">{{ mantenimiento.mensaje }}</td>
-					</tr>
-					<tr>
-						<th class="th_row_icon_spn" colspan="1">
-							<div class="icons">
-								<iconsSvg imag="true" />
-								<span>
-									IMAGEN/FOTO
-								</span>
-							</div>
-						</th>
-						<td colspan="3">{{ mantenimiento.imag }}</td>
+						<td colspan="3">{{ mantenimiento.description }}</td>
 					</tr>
 					<!-- Agrega más filas según sea necesario -->
 				</tbody>
@@ -202,6 +192,7 @@ th {
 	h3 {
 		font-size: 1.2rem
 	}
+
 	.table thead {
 		display: inherit;
 	}
@@ -223,8 +214,8 @@ th {
 </style>
 <script setup>
 import iconsSvg from '../../../components/iconsSvg.vue';
-import { fecha, info, area, nombres, contacto, documento, estado, terminos, email, mensaje } from '../../../components/svg';
-import { cargarDatosMantenimiento } from '../fetch.query';
+import { fecha, info, area, nombres, contacto, documento, terminos, email, mensaje } from '../../../components/svg';
+import maintenance_apiHandler, { actions, maintenance_base_endpoint } from '../APIHandler.mantenimientos'
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
@@ -233,26 +224,64 @@ const route = useRoute()
 const time = 1000;
 
 const mantenimiento = ref({
-	id_mantenimiento: "",
-	fecha_registro: "",
-	reportar: "",
-	tipo_doc: "",
-	identificacion: "",
-	nombres_apellidos: "",
+	id: "",
+	register_date: "",
+	status: "",
+	headquarter: "",
+	document_type: "",
+	document: "",
+	fullname: "",
+	celphone: "",
 	email: "",
 	address: "",
-	tel: "",
-	estado: "",
-	area_enc: "",
-	mensaje: "",
-	imag: "",
-	gdpr: false,
+	category: "",
+	description: "",
+
+
 })
 
 const created = async () => {
-	const id = route.params.id
-	mantenimiento.value = await cargarDatosMantenimiento(id);
-}
+	try {
+		const id = route.params.id;
+		const clienteId = route.params.Id;
+		const res = await maintenance_apiHandler.cargarDatos(id, maintenance_base_endpoint + actions.getBy);
+
+		if (!res || !res.register_date) {
+			console.error('Los datos obtenidos de la API no contienen la fecha esperada.');
+			return;
+		}
+
+		const fechaOriginal = new Date(res.register_date);
+		const utcTime = fechaOriginal.getTime();
+		const localOffset = fechaOriginal.getTimezoneOffset() * 60000;
+		const localTime = utcTime - localOffset;
+		const offset = 5 * 60 * 60 * 1000; // Diferencia horaria en milisegundos
+		const adjustedTime = localTime + offset;
+
+		const fechaFormateada = new Date(adjustedTime).toLocaleString('es-ES', {
+			year: 'numeric',
+			month: 'long',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			hour12: true,
+		});
+
+		// Actualizar los datos con la nueva fecha
+		res.register_date = fechaFormateada;
+
+		// Asignar los datos actualizados a tu variable de mantenimiento.value
+		mantenimiento.value = { ...mantenimiento.value, ...res };
+
+		// Resto de tu lógica...
+	} catch (error) {
+		console.error('Error al obtener o procesar los datos:', error);
+	}
+};
+
+
+
+
 
 const openPDFView = () => {
 	// Contenido que deseas mostrar en la nueva ventana o pestaña
@@ -326,7 +355,7 @@ const openPDFView = () => {
 							<span>
 								FECHA DE REGISTRO
 							</span>
-							<div>${mantenimiento.value.fecha_registro}</div>
+							<div>${mantenimiento.value.register_date}</div>
 						</div>
 					</th>
 				</tr>
@@ -349,7 +378,7 @@ const openPDFView = () => {
 							</span>
 						</div>
 					</th>
-					<td colspan="3">${mantenimiento.value.area_enc}</td>
+					<td colspan="3">${mantenimiento.value.id_headquarter.headquarter}</td>
 				</tr>
 
 			</thead>
@@ -357,13 +386,13 @@ const openPDFView = () => {
 				<tr>
 					<th>
 						<div class="icons">
-							${estado}
+							${status}
 							<span>
 								ESTADO
 							</span>
 						</div>
 					</th>
-					<td>${mantenimiento.value.estado}</td>
+					<td>${mantenimiento.value.id_status.status}</td>
 					<th>
 						<div class="icons">
 							${terminos}
@@ -372,7 +401,7 @@ const openPDFView = () => {
 							</span>
 						</div>
 					</th>
-					<td>${mantenimiento.value.id_mantenimiento}</td>
+					<td>${mantenimiento.value.id}</td>
 				</tr>
 				<tr>
 					<th>
@@ -383,7 +412,7 @@ const openPDFView = () => {
 							</span>
 						</div>
 					</th>
-					<td>${mantenimiento.value.nombres_apellidos}</td>
+					<td>${mantenimiento.value.id_customer.fullname}</td>
 
 					<th>
 						<div class="icons">
@@ -393,7 +422,7 @@ const openPDFView = () => {
 							</span>
 						</div>
 					</th>
-					<td>${mantenimiento.value.tel}</td>
+					<td>${mantenimiento.value.id_customer.celphone}</td>
 				</tr>
 				<tr>
 					<th>
@@ -405,8 +434,8 @@ const openPDFView = () => {
 						</div>
 					</th>
 					<td>
-						${mantenimiento.value.tipo_doc}-
-						${mantenimiento.value.identificacion}
+						${mantenimiento.value.id_customer.document_type}-
+						${mantenimiento.value.id_customer.document}
 					</td>
 					<th>
 						<div class="icons">
@@ -416,7 +445,7 @@ const openPDFView = () => {
 							</span>
 						</div>
 					</th>
-					<td>${mantenimiento.value.email}</td>
+					<td>${mantenimiento.value.id_customer.email}</td>
 				</tr>
 				<tr>
 					<th colspan="2">
@@ -427,17 +456,7 @@ const openPDFView = () => {
 							</span>
 						</div>
 					</th>
-					<td colspan="2">${mantenimiento.value.mensaje}</td>
-				</tr>
-				<tr>
-					<th colspan="2">
-						<div class="icons">
-							<span>
-								IMAGEN/FOTO
-							</span>
-						</div>
-					</th>
-					<td colspan="2">${mantenimiento.value.imag}</td>
+					<td colspan="2">${mantenimiento.value.description}</td>
 				</tr>
 
 				<!-- Agrega más filas según sea necesario -->

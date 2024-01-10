@@ -7,39 +7,42 @@
 			</div>
 			<div class="card-body my-2">
 				<form v-on:submit.prevent="crearMantenimiento">
+					<div v-if="loading" class="loading-text">Cargando datos...</div>
 
-					<selectS inputId="'floatingSelect'" :selected-value="mantenimiento.reportar" :label="'Reportar a *'" :options="reportOptions" @update:select-value="mantenimiento.reportar = $event" :editable="true" /><br>
-					<selectS inputId="'floatingSelect'" :selected-value="mantenimiento.tipo_doc" :label="'Tipo de Identificación *'" :options="docOptions" @update:select-value="mantenimiento.tipo_doc = $event" :editable="true" />
 
-					<div class="my-3">
-						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.identificacion" placeholder="Documento" label="Número de Identificación" errormessage="Este campo es obligatorio*" />
-					</div>
+					<selectS inputId="'floatingSelect'" :selected-value="mantenimiento.headquarter" :label="'Reportar a *'" :options="reportOptions" @update:select-value="mantenimiento.headquarter = $event" :editable="!loading" /><br>
+					<selectS inputId="'floatingSelect'" :selected-value="mantenimiento.document_type" :label="'Tipo de Identificación *'" :options="docOptions" @update:select-value="mantenimiento.document_type = $event" :editable="true" />
 
 					<div class="my-3">
-						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.nombres_apellidos" placeholder="nombre" label="Nombres y Apellidos" errormessage="Este campo es obligatorio*" />
-					</div>
-					<div class="my-3">
-						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.tel" placeholder="tel" label="Número de Contacto" errormessage="Este campo es obligatorio*" />
-					</div>
-					<div class="my-3">
-						<InputText type="email" inputId="floatingInputGroup1" v-model="mantenimiento.email" placeholder="email" label="Correo electrónico" errormessage="Este campo es obligatorio*" />
-					</div>
-					<div class="my-3">
-						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.address" placeholder="direccion" label="Dirección" errormessage="Este campo es obligatorio*" />
+						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.document" placeholder="Documento" label="Número de Identificación" errormessage="Este campo es obligatorio*" @input="filterNonNumeric" :max="10" />
 					</div>
 
 					<div class="my-3">
-						<selectS inputId="'floatingSelect'" :selected-value="mantenimiento.area_enc" :label="'Categoria *'" :options="categoriaOptions" @update:select-value="mantenimiento.area_enc = $event" :editable="true" />
+						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.fullname" placeholder="nombre" label="Nombres y Apellidos" errormessage="Este campo es obligatorio*" :max="50" />
+					</div>
+					<div class="my-3">
+						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.celphone" placeholder="telefono" label="Número de Contacto" errormessage="Este campo es obligatorio*" @input="filterNonNumeric" :max="10" />
+					</div>
+					<div class="my-3">
+						<InputText type="email" inputId="floatingInputGroup1" v-model="mantenimiento.email" placeholder="email" label="Correo electrónico" errormessage="Este campo es obligatorio*" :max="50" />
+					</div>
+					<div class="my-3">
+						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.address_maintenance" placeholder="direccion" label="Dirección" errormessage="Este campo es obligatorio*" :max="50" />
+					</div>
+
+					<div class="my-3">
+						<selectS inputId="'floatingSelect'" :selected-value="mantenimiento.category" :label="'Categoria *'" :options="categoriaOptions" @update:select-value="mantenimiento.category = $event" :editable="!loading" />
 					</div>
 
 					<div class="container">
-						<ContainerText :textValue="mantenimiento.mensaje" inputId="textArea" label="Descripción" :rows="3" :maxlength="180" @update:textValue="mantenimiento.mensaje = $event" />
+						<ContainerText :textValue="mantenimiento.description" inputId="textArea" label="Descripción" :rows="3" :maxlength="180" @update:textValue="mantenimiento.description = $event" />
 					</div>
 					<div class="my-3">
-						<InputText type="file" id="archivo" name="archivo" accept="image/*" @change="onFileChange" />
+						<label style="color:rgba(33, 37, 41, 0.75)">Cargar Imagen*</label>
+						<FileInput :buttonText="'Subir Imagen'" :textValue="mantenimiento.url_img" id="archivo" name="archivo" :inputId="'fileInput'" :acceptedFileTypes="'image/jpeg, image/png, image/gif'" />
 					</div>
 
-					<button type="submit" :textValue="mantenimiento.imag" class="btn btn-primary" :disabled="enviando">ENVIAR</button>
+					<button type="submit" class="btn btn-primary" :disabled="enviando">ENVIAR</button>
 
 				</form>
 			</div>
@@ -53,41 +56,34 @@
 import ContainerText from '../../../components/containerText.vue';
 import InputText from '../../../components/inputText.vue';
 import selectS from '../../../components/select-s.vue';
-// import { fetchPost } from '../fetch.query';
+import FileInput from '../../../components/inputFile.vue';
+import maintenance_apiHandler, { actions, customer_base_endpoint, category_base_endpoint, headquarter_base_endpoint, maintenance_base_endpoint } from '../APIHandler.mantenimientos';
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { ref, resolveDirective } from 'vue';
+import { onMounted } from 'vue';
 
 const router = useRouter()
 const enviando = ref(false)
-const onFileChange = (event) => {
-  const selectedFile = event.target.files[0];
-  // Aquí puedes realizar operaciones con el archivo seleccionado
-};
+const loading = ref(false)
+
 const mantenimiento = ref({
-	reportar: "",
-	tipo_doc: "",
-	identificacion: "",
-	nombres_apellidos: "",
+	headquarter: "",
+	document_type: "",
+	document: "",
+	fullname: "",
+	celphone: "",
 	email: "",
-	address: "",
-	tel: "",
-	area_enc: "",
-	mensaje: "",
-	imag: "",
-	gdpr: false
+	address_maintenance: "",
+	category: "",
+	description: "",
+	url_img: "",
+	id_customer: "",
 })
-const reportOptions = ref([
-	{ value: 'Laureles', label: 'Laureles' },
-	{ value: 'Colores', label: 'Colores' },
-	{ value: 'Poblado', label: 'Poblado' },
-	{ value: 'Envigado', label: 'Envigado' },
-	{ value: 'Sabaneta', label: 'Sabaneta' },
-	{ value: 'Estrella', label: 'Estrella' },
-	{ value: 'Bello', label: 'Bello' },
-	{ value: 'Rionegro', label: 'Rionegro' },
-	{ value: 'Fontibon-Bogota', label: 'Fontibon-Bogota' },
-	{ value: 'Mosquera-Cundinamarca', label: 'Mosquera-Cundinamarca' },
-])
+const filterNonNumeric = (event) => {
+	const input = event.target;
+	input.value = input.value.replace(/\D/g, '');
+};
+
 const docOptions = ref([
 	{ value: 'CC', label: 'CC' },
 	{ value: 'CE', label: 'CE' },
@@ -95,49 +91,156 @@ const docOptions = ref([
 	{ value: 'PAS', label: 'PAS' },
 ])
 
-const categoriaOptions = ref([
-	{ value: 'Acabados', label: 'Acabados' },
-	{ value: 'Carpinteria', label: 'Carpinteria' },
-	{ value: 'Cerrajería', label: 'Cerrajería' },
-	{ value: 'Control de Plagas', label: 'Control de Plagas' },
-	{ value: 'Electricidad', label: 'Electricidad' },
-	{ value: 'Impermeabilización', label: 'Impermeabilización' },
-	{ value: 'Gasodomésticos', label: 'Gasodomésticos' },
-	{ value: 'Pisos', label: 'Pisos' },
-	{ value: 'Plomeria', label: 'Plomeria' },
-	{ value: 'Vidrieras y Ventanas', label: 'Vidrieras y Ventanas' },
-	{ value: 'Varios Servicios', label: 'Varios Servicios' },
-])
+const categoriaOptions = ref([]);
+const reportOptions = ref([]);
 
+const fetchDataFromAPI = async (url, optionsRef) => {
+	try {
+		loading.value = true;
+		const responseData = await maintenance_apiHandler.getRequest(url);
 
-const crearMantenimiento = async () => {
+		if (!responseData || responseData.length === 0) {
+			throw new Error('No se encontraron datos');
+		}
 
-	if (enviando.value) {
-		return;
+		const formattedData = responseData.map((item) => ({
+			value: item.id,
+			label: item.headquarter || item.category,
+		}));
+		optionsRef.value = formattedData;
+	} catch (error) {
+		console.error('Hubo un error al obtener los datos:', error);
+		throw error;
+	} finally {
+		loading.value = false;
 	}
+};
 
-	enviando.value = true;
-	mantenimiento.value.nombres_apellidos = mantenimiento.value.nombres_apellidos.toUpperCase();
-	mantenimiento.value.mensaje = mantenimiento.value.mensaje.toUpperCase();
+onMounted(async () => {
+	try {
+		await Promise.all([
+			fetchDataFromAPI(headquarter_base_endpoint + actions.getAll, reportOptions),
+			fetchDataFromAPI(category_base_endpoint + actions.getAll, categoriaOptions)
+		]);
+	} catch (error) {
+		console.error('Error al cargar datos iniciales:', error);
+		console.error('No se encontraron datos iniciales. Por favor, inténtalo de nuevo más tarde.');
+	}
+});
 
-	let datosEnviar = {
-		reportar: mantenimiento.value.reportar,
-		tipo_doc: mantenimiento.value.tipo_doc,
-		identificacion: mantenimiento.value.identificacion,
-		nombres_apellidos: mantenimiento.value.nombres_apellidos,
-		email: mantenimiento.value.email,
-		tel: mantenimiento.value.tel,
-		mensaje: mantenimiento.value.mensaje,
-		area_enc: mantenimiento.value.area_enc,
-		gdpr: mantenimiento.value.gdpr,
-/* 		estado: "SIN GESTIONAR",
- */	}
 
-	router.push({ path: 'exportPDF/:id'})
+const buscarClienteExistente = async (document, email) => {
+	try {
+		const endpoint = `${customer_base_endpoint}/${actions.getBy}/?document=${document}&email=${email}`;
+		const clienteExistente = await maintenance_apiHandler.getRequest(endpoint);
 
-}
+		return clienteExistente;
+	} catch (error) {
+		console.error('Error al buscar el cliente existente:', error);
+		throw new Error('Hubo un problema al buscar el cliente existente');
+	}
+};
 
+const crearcustomer = async () => {
+	try {
+		// Validar si el cliente ya existe
+		const clienteExistente = await buscarClienteExistente(mantenimiento.value.document, mantenimiento.value.email);
+
+		if (clienteExistente) {
+			// El cliente ya existe, retornar su ID
+			return clienteExistente.id;
+		} else {
+			// El cliente no existe, crearlo
+			const datoscustomer = {
+				document: mantenimiento.value.document,
+				fullname: mantenimiento.value.fullname.toUpperCase(),
+				document_type: mantenimiento.value.document_type,
+				email: mantenimiento.value.email,
+				celphone: mantenimiento.value.celphone,
+			};
+
+
+			const customerCreado = await maintenance_apiHandler.fetchPost(datoscustomer, customer_base_endpoint + "/" + actions.create);
+			return customerCreado.id;
+		}
+	} catch (error) {
+		console.error('Error al crear o buscar el cliente:', error);
+		alert('Hubo un problema al crear o buscar el cliente. Por favor, inténtalo de nuevo más tarde.');
+		throw error;
+	}
+};
+const crearMantenimiento = async () => {
+	try {
+		if (!enviando.value) {
+			enviando.value = true;
+
+			const customerId = await crearcustomer();
+
+			const datosEnviar = {
+				address_maintenance: mantenimiento.value.address_maintenance,
+				description: mantenimiento.value.description.toUpperCase(),
+				id_headquarter: mantenimiento.value.headquarter,
+				id_category: mantenimiento.value.category,
+				id_customer: { id: customerId },
+				id_status: { id: 3 },
+			};
+
+			const mantenimientoCreado = await maintenance_apiHandler.fetchPost(datosEnviar, maintenance_base_endpoint + "/" + actions.create);
+
+			if (!mantenimientoCreado || mantenimientoCreado.id === undefined) {
+				throw new Error('El nuevo mantenimiento no fue creado correctamente o no tiene un ID válido.');
+			}
+
+			const idMantenimiento = mantenimientoCreado.id;
+
+			mantenimiento.value.url_img = `URL de la imagen del mantenimiento ${idMantenimiento}`;
+			router.push({ name: 'ExportarMantenimiento', params: { id: idMantenimiento } });
+			await handleFileChange(idMantenimiento);
+		}
+	} catch (error) {
+		console.error('Error al crear el mantenimiento:', error);
+		alert('Hubo un problema al crear el mantenimiento. Por favor, inténtalo de nuevo más tarde.');
+		throw error;
+	} finally {
+		enviando.value = false;
+	}
+};
+
+const handleFileChange = async (idMantenimiento) => {
+	try {
+		const selectedFile = document.getElementById('fileInput').files[0];
+
+		if (selectedFile) {
+			const formData = new FormData();
+			formData.append('archivo', selectedFile);
+
+			const uploadUrl = `${maintenance_base_endpoint}/${actions.uploadImageMaintenance}/archivo/${idMantenimiento}`;
+
+			// Subir archivo
+			const uploadResponse = await maintenance_apiHandler.uploadFile(uploadUrl, formData);
+
+			if (uploadResponse) {
+
+				// Actualizar el campo url_img con la URL del archivo subido
+				mantenimiento.value.url_img = uploadResponse; // Actualiza según la estructura de tu objeto
+
+
+				const updateUrl = `${maintenance_base_endpoint}/${actions.update}/${idMantenimiento}`;
+
+				// Actualizar en el servidor
+				const updateResponse = await maintenance_apiHandler.fetchPut(updateUrl, { url_img: uploadResponse });
+
+				if (updateResponse) {
+				} else {
+					console.error('Error al actualizar el campo url_img en el servidor');
+				}
+			} else {
+				console.error('Error al subir el archivo');
+			}
+		}
+	} catch (error) {
+		console.error('Error en la subida del archivo:', error);
+	}
+};
 
 </script>
-
-
