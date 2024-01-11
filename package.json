@@ -9,8 +9,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "build:crinmo": "vite build --base=/crinmo/pqrs/dist",
-    "build:portada": "vite build --base=/api-v1/dist"
+    "build:portada:local": "vite build --base=/portadainmobiliaria.com --mode=development",
+    "build:portada:prod": "vite build --base=/ --mode=production"
   },
   "dependencies": {
     "bootstrap": "^5.3.2",
