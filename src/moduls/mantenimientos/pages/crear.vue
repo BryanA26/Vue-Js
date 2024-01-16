@@ -20,8 +20,9 @@
 					<div class="my-3">
 						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.fullname" placeholder="nombre" label="Nombres y Apellidos" errormessage="Este campo es obligatorio*" :max="50" />
 					</div>
-					<div class="my-3">
-						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.celphone" placeholder="telefono" label="Número de Contacto" errormessage="Este campo es obligatorio*" @input="filterNonNumeric" :max="10" />
+					<div class="form-group">
+						<CountrySelector class="input-field2" type="text" inputId="floatingInputGroup2" v-model="mantenimiento.celphoneExt" placeholder="extencion" label="Extencion" errormessage="Este campo es obligatorio*" :max="10" />
+						<InputText class="input-field" type="text" inputId="floatingInputGroup2" v-model="mantenimiento.celphone" placeholder="telefono" label="Número de Contacto" errormessage="Este campo es obligatorio*" @input="filterNonNumeric" :max="10" />
 					</div>
 					<div class="my-3">
 						<InputText type="email" inputId="floatingInputGroup1" v-model="mantenimiento.email" placeholder="email" label="Correo electrónico" errormessage="Este campo es obligatorio*" :max="50" />
@@ -57,6 +58,7 @@ import ContainerText from '../../../components/containerText.vue';
 import InputText from '../../../components/inputText.vue';
 import selectS from '../../../components/select-s.vue';
 import FileInput from '../../../components/inputFile.vue';
+import CountrySelector from '../../../components/contryDatalis.vue';
 import maintenance_apiHandler, { actions, customer_base_endpoint, category_base_endpoint, headquarter_base_endpoint, maintenance_base_endpoint } from '../APIHandler.mantenimientos';
 import { useRouter } from 'vue-router';
 import { ref, resolveDirective } from 'vue';
@@ -72,6 +74,7 @@ const mantenimiento = ref({
 	document: "",
 	fullname: "",
 	celphone: "",
+	celphoneExt: "",
 	email: "",
 	address_maintenance: "",
 	category: "",
@@ -145,7 +148,7 @@ const crearcustomer = async () => {
 	try {
 		// Validar si el cliente ya existe
 		const clienteExistente = await buscarClienteExistente(mantenimiento.value.document, mantenimiento.value.email);
-
+		const celphone = `${mantenimiento.value.celphoneExt} ${mantenimiento.value.celphone}`.replace(/\+/g, ''); // Elimina el símbolo '+'
 		if (clienteExistente) {
 			// El cliente ya existe, retornar su ID
 			return clienteExistente.id;
@@ -156,7 +159,7 @@ const crearcustomer = async () => {
 				fullname: mantenimiento.value.fullname.toUpperCase(),
 				document_type: mantenimiento.value.document_type,
 				email: mantenimiento.value.email,
-				celphone: mantenimiento.value.celphone,
+				celphone: celphone,
 			};
 
 
@@ -244,3 +247,18 @@ const handleFileChange = async (idMantenimiento) => {
 };
 
 </script>
+<style>
+.form-group {
+	display: flex;
+}
+
+.input-field {
+	margin-right: 10px;
+	flex: 1;
+}
+
+.input-field2 {
+	width: 150px;
+	margin-right: 10px;
+}
+</style>
