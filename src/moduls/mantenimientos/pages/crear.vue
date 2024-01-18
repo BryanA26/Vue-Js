@@ -148,7 +148,7 @@ const crearcustomer = async () => {
 	try {
 		// Validar si el cliente ya existe
 		const clienteExistente = await buscarClienteExistente(mantenimiento.value.document, mantenimiento.value.email);
-		const celphone = `${mantenimiento.value.celphoneExt} ${mantenimiento.value.celphone}`.replace(/\+/g, ''); // Elimina el símbolo '+'
+		const celphone = `${mantenimiento.value.celphoneExt} ${mantenimiento.value.celphone}`; // Elimina el símbolo '+'
 		if (clienteExistente) {
 			// El cliente ya existe, retornar su ID
 			return clienteExistente.id;
