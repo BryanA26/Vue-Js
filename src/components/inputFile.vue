@@ -1,10 +1,9 @@
 <template>
 	<div class="file-upload">
 		<label :for="inputId" class="custom-file-upload">{{ buttonText }}</label>
-		<input :id="inputId" :accept="acceptedFileTypes" type="file" @change="onFileChange" style="display: none;" />
-		<span>
-			{{ displayText }}
-			<button v-if="fileSelected" @click="cancelSelection" class="cancel-button">x</button>
+		<input :id="inputId" :accept="acceptedFileTypes" multiple type="file" @change="onFileChange" style="display: none;" />
+		<span v-for="file in selectedFiles" :key="file.name">
+			{{ file.name }}
 		</span>
 	</div>
 </template>
@@ -25,25 +24,14 @@ const props = defineProps({
 		type: String,
 		default: '',
 	},
-})
+});
 
-const fileSelected = ref(false);
-const displayText = ref('No se ha seleccionado archivo');
-const fileInput = ref(null);
+const selectedFiles = ref([]);
 
 const onFileChange = (event) => {
-	const file = event.target.files[0];
-	if (file) {
-		displayText.value = file.name;
-		fileSelected.value = true;
-	}
-};
-
-const cancelSelection = () => {
-	fileSelected.value = false;
-	displayText.value = 'No se ha seleccionado archivo';
-	if (fileInput.value) {
-		fileInput.value.value = '';
+	const files = event.target.files;
+	if (files.length > 0) {
+		selectedFiles.value = Array.from(files);
 	}
 };
 </script>
@@ -69,22 +57,7 @@ const cancelSelection = () => {
 
 span {
 	font-size: 14px;
+	margin-right: 10px;
 }
 
-.cancel-button {
-	background-color: transparent;
-	color: #ff0000;
-	border: none;
-	cursor: pointer;
-	margin-left: 6px;
-}
-
-.cancel-button:hover {
-	background-color: #db4444;
-	color: #ffffff;
-	border: none;
-	cursor: pointer;
-	margin-left: 6px;
-	border-radius: 100em;
-}
 </style>

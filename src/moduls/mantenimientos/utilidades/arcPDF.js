@@ -185,18 +185,42 @@ export const generateHTMLContent = (mantenimiento) => {
 				<h2>${mensaje}</h2>
 				<h3>IMAGENES</h3>
 				<ul>
-				  <li>
-					<a href="${maintenance_base_endpoint}${mantenimiento.value ? mantenimiento.value.id : mantenimiento.id}/${mantenimiento.value ? mantenimiento.value.url_img : mantenimiento.url_img}" target="_blank">
-					  Enlace a la imagen
-					</a>
-				  </li>
+				${getImagenesEnlaces(mantenimiento.value || mantenimiento)}
 				</ul>
 			  </div>
 
 				<!-- Agrega más filas según sea necesario -->
-
-
 	</body>
 	</html>
 	`;
   };
+  function getImagenesEnlaces(mantenimiento) {
+	// Verifica si la propiedad 'url_img' existe y es un array
+	if (mantenimiento && mantenimiento.url_img) {
+	  let nombresArchivos;
+
+	  try {
+		// Intenta analizar la cadena JSON
+		nombresArchivos = JSON.parse(mantenimiento.url_img);
+	  } catch (error) {
+		// Si hay un error al analizar, asume que la cadena ya es un array
+		nombresArchivos = mantenimiento.url_img;
+	  }
+
+	  // Si nombresArchivos es un array, construye los enlaces
+	  if (Array.isArray(nombresArchivos)) {
+		const maintenanceId = mantenimiento.id || mantenimiento.value.id; // Usar mantenimiento.id si existe, de lo contrario mantenimiento.value.id
+		const enlaces = nombresArchivos.map(nombreArchivo => {
+		  const urlImagen = `${maintenance_base_endpoint}${maintenanceId}/${nombreArchivo}`;
+		  return `<li><a href="${urlImagen}" target="_blank">Enlace a la imagen</a></li>`;
+		});
+
+		return enlaces.join('');
+	  } else {
+		return '<li>No hay imágenes disponibles</li>';
+	  }
+	} else {
+	  return '<li>No hay imágenes disponibles</li>';
+	}
+  }
+
