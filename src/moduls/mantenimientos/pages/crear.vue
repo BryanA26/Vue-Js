@@ -217,10 +217,8 @@ const handleFileChange = async (idMantenimiento) => {
 
                 formData.append('archivo', archivo);
             }
-            console.log(fotos)
             const uploadUrl = `${maintenance_base_endpoint}uploadMultipleImage/archivo/${idMantenimiento}`;
             const uploadResponse = await maintenance_apiHandler.uploadMultiple(uploadUrl, formData);
-            console.log(uploadResponse)
             if (uploadResponse) {
                 // Actualizar el campo url_img con la URL del archivo subido
                 mantenimiento.value.url_img = uploadResponse; // Actualiza según la estructura de tu objeto
@@ -228,7 +226,6 @@ const handleFileChange = async (idMantenimiento) => {
                 // Actualizar en el servidor
                 const updateResponse = await maintenance_apiHandler.fetchPut(updateUrl, { url_img: uploadResponse });
 
-                console.log(updateResponse)
                 if (updateResponse) {
                 } else {
                     console.error('Error al actualizar el campo url_img en el servidor');
