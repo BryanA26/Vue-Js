@@ -38,7 +38,7 @@
 						<ContainerText :textValue="mantenimiento.description" inputId="textArea" label="Descripción" :rows="3" :maxlength="180" @update:textValue="mantenimiento.description = $event" />
 					</div>
 					<div class="my-3">
-						<label style="color:rgba(33, 37, 41, 0.75)">Cargar Imagen*</label>
+						<label style="color:rgba(33, 37, 41, 0.75)">Cargar Imagen</label>
 						<FileInput :buttonText="'Subir Imagen'" :textValue="mantenimiento.url_img" id="archivo" name="archivo" :inputId="'fileInput'" :acceptedFileTypes="'image/jpeg, image/png, image/gif'" />
 					</div>
 
@@ -61,6 +61,9 @@ import maintenance_apiHandler, { actions, customer_base_endpoint, category_base_
 import { useRouter } from 'vue-router';
 import { ref, resolveDirective } from 'vue';
 import { onMounted } from 'vue';
+import { generateHTMLContent } from '../utilidades/arcPDF.JS'
+import {formatDate} from '../../utilidades/formarDate'
+
 
 const router = useRouter()
 const enviando = ref(false)
@@ -169,6 +172,33 @@ const crearcustomer = async () => {
 		throw error;
 	}
 };
+const enviarCorreoDesdeCreated = async (idMantenimiento) => {
+  try {
+    const res = await maintenance_apiHandler.cargarDatos(idMantenimiento, maintenance_base_endpoint + actions.getBy);
+    if (!res || !res.register_date) {
+      console.error('Los datos obtenidos de la API no contienen la fecha esperada.');
+      return;
+    }
+    res.register_date = formatDate(res.register_date);
+
+    // Asignar los datos actualizados a tu variable de mantenimiento.value
+    mantenimiento.value = { ...mantenimiento.value, ...res };
+
+    // Enviar correo con los datos actualizados
+    if (mantenimiento.value) {
+      const datosAEnviar = {
+        email: mantenimiento.value.email,
+        subjectEmail: "PORTADA INMOBILIARIA",
+        bodyEmail: generateHTMLContent(mantenimiento.value),
+      };
+
+      const endpointEmail = `${customer_base_endpoint}${actions.sendEmail}`;
+      const response = await maintenance_apiHandler.enviarDatosEspecificos(datosAEnviar, endpointEmail);
+    }
+  } catch (error) {
+    console.error('Error al obtener o procesar los datos o al enviar el correo electrónico:', error);
+  }
+};
 const crearMantenimiento = async () => {
 	try {
 		if (!enviando.value) {
@@ -196,6 +226,9 @@ const crearMantenimiento = async () => {
 			mantenimiento.value.url_img = `URL de la imagen del mantenimiento ${idMantenimiento}`;
 			router.push({ name: 'ExportarMantenimiento', params: { id: idMantenimiento } });
 			await handleFileChange(idMantenimiento);
+
+			// Llama a la función enviarCorreo después de la redirección
+			await enviarCorreoDesdeCreated(idMantenimiento);
 		}
 	} catch (error) {
 		console.error('Error al crear el mantenimiento:', error);
@@ -228,7 +261,7 @@ const handleFileChange = async (idMantenimiento) => {
 				const updateUrl = `${maintenance_base_endpoint}/${actions.update}/${idMantenimiento}`;
 
 				// Actualizar en el servidor
-				const updateResponse = await maintenance_apiHandler.fetchPut(updateUrl, { url_img: uploadResponse });
+				const updateResponse = await maintenance_apiHandler.fetchPut(updateUrl, { url_img:JSON.parse (uploadResponse) });
 
 				if (updateResponse) {
 				} else {
