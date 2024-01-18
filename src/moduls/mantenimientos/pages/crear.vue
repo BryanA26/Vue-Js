@@ -197,7 +197,6 @@ const enviarCorreoDesdeCreated = async (idMantenimiento) => {
       const response = await maintenance_apiHandler.enviarDatosEspecificos(datosAEnviar, endpointEmail);
 
       // Puedes agregar un console.log para verificar la respuesta
-      console.log('Respuesta del envío de correo:', response);
     } else {
       console.error('Datos necesarios para el correo electrónico no disponibles.');
     }
