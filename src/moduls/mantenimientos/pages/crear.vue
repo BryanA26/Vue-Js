@@ -39,7 +39,7 @@
 					</div>
 					<div class="my-3">
 						<label style="color:rgba(33, 37, 41, 0.75)">Cargar Imagen*</label>
-						<FileInput :buttonText="'Subir Imagen'" :textValue="mantenimiento.url_img" id="archivo" name="archivo" :inputId="'fileInput'" :acceptedFileTypes="'image/jpeg, image/png, image/gif'" />
+						<FileInput :buttonText="'Subir Imagen'" :textValue="mantenimiento.url_img" id="archivo" name="archivo" :inputId="'fileInput'" :acceptedFileTypes="'image/jpeg'" />
 					</div>
 
 					<button type="submit" class="btn btn-primary" :disabled="enviando">ENVIAR</button>
@@ -207,40 +207,39 @@ const crearMantenimiento = async () => {
 };
 
 const handleFileChange = async (idMantenimiento) => {
-	try {
-		const selectedFile = document.getElementById('fileInput').files[0];
+    try {
+        const selectedFile = document.getElementById('fileInput').files;
 
-		if (selectedFile) {
-			const formData = new FormData();
-			formData.append('archivo', selectedFile);
+        if (selectedFile) {
+            const formData = new FormData();
+            const fotos = []
+            for (const archivo of selectedFile) {
 
-			const uploadUrl = `${maintenance_base_endpoint}/${actions.uploadImageMaintenance}/archivo/${idMantenimiento}`;
+                formData.append('archivo', archivo);
+            }
+            console.log(fotos)
+            const uploadUrl = `${maintenance_base_endpoint}uploadMultipleImage/archivo/${idMantenimiento}`;
+            const uploadResponse = await maintenance_apiHandler.uploadMultiple(uploadUrl, formData);
+            console.log(uploadResponse)
+            if (uploadResponse) {
+                // Actualizar el campo url_img con la URL del archivo subido
+                mantenimiento.value.url_img = uploadResponse; // Actualiza según la estructura de tu objeto
+                const updateUrl = `${maintenance_base_endpoint}${actions.update}/${idMantenimiento}`;
+                // Actualizar en el servidor
+                const updateResponse = await maintenance_apiHandler.fetchPut(updateUrl, { url_img: uploadResponse });
 
-			// Subir archivo
-			const uploadResponse = await maintenance_apiHandler.uploadFile(uploadUrl, formData);
-
-			if (uploadResponse) {
-
-				// Actualizar el campo url_img con la URL del archivo subido
-				mantenimiento.value.url_img = uploadResponse; // Actualiza según la estructura de tu objeto
-
-
-				const updateUrl = `${maintenance_base_endpoint}/${actions.update}/${idMantenimiento}`;
-
-				// Actualizar en el servidor
-				const updateResponse = await maintenance_apiHandler.fetchPut(updateUrl, { url_img: uploadResponse });
-
-				if (updateResponse) {
-				} else {
-					console.error('Error al actualizar el campo url_img en el servidor');
-				}
-			} else {
-				console.error('Error al subir el archivo');
-			}
-		}
-	} catch (error) {
-		console.error('Error en la subida del archivo:', error);
-	}
+                console.log(updateResponse)
+                if (updateResponse) {
+                } else {
+                    console.error('Error al actualizar el campo url_img en el servidor');
+                }
+            } else {
+                console.error('Error al subir el archivo');
+            }
+        }
+    } catch (error) {
+        console.error('Error en la subida del archivo:', error);
+    }
 };
 
 </script>

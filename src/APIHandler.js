@@ -130,8 +130,7 @@ export default class APIHandler {
 		}
 	}
 
-
-	async uploadFile(uploadUrl, formData) {
+	async uploadMultiple(uploadUrl, formData) {
 		const uploadOptions = {
 			method: 'POST',
 			body: formData,
