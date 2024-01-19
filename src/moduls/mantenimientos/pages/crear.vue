@@ -38,8 +38,8 @@
 						<ContainerText :textValue="mantenimiento.description" inputId="textArea" label="Descripción" :rows="3" :maxlength="180" @update:textValue="mantenimiento.description = $event" />
 					</div>
 					<div class="my-3">
-						<label style="color:rgba(33, 37, 41, 0.75)">Cargar Imagen</label>
-						<FileInput :buttonText="'Subir Imagen'" :textValue="mantenimiento.url_img" id="archivo" name="archivo" :inputId="'fileInput'" :acceptedFileTypes="'image/jpeg, image/png, image/gif'" />
+						<label style="color:rgba(33, 37, 41, 0.75)">Cargar Imagen*</label>
+						<FileInput :buttonText="'Subir Imagen'" :textValue="mantenimiento.url_img" id="archivo" name="archivo" :inputId="'fileInput'" :acceptedFileTypes="'image/jpeg'" />
 					</div>
 
 					<button type="submit" class="btn btn-primary" :disabled="enviando">ENVIAR</button>
@@ -174,18 +174,19 @@ const crearcustomer = async () => {
 };
 const enviarCorreoDesdeCreated = async (idMantenimiento) => {
   try {
+    // Obtener datos específicos del mantenimiento
     const res = await maintenance_apiHandler.cargarDatos(idMantenimiento, maintenance_base_endpoint + actions.getBy);
+
     if (!res || !res.register_date) {
       console.error('Los datos obtenidos de la API no contienen la fecha esperada.');
       return;
     }
-    res.register_date = formatDate(res.register_date);
 
     // Asignar los datos actualizados a tu variable de mantenimiento.value
     mantenimiento.value = { ...mantenimiento.value, ...res };
 
-    // Enviar correo con los datos actualizados
-    if (mantenimiento.value) {
+    // Verificar si los datos necesarios están presentes
+    if (mantenimiento.value && mantenimiento.value.email && mantenimiento.value.register_date) {
       const datosAEnviar = {
         email: mantenimiento.value.email,
         subjectEmail: "PORTADA INMOBILIARIA",
@@ -194,86 +195,90 @@ const enviarCorreoDesdeCreated = async (idMantenimiento) => {
 
       const endpointEmail = `${customer_base_endpoint}${actions.sendEmail}`;
       const response = await maintenance_apiHandler.enviarDatosEspecificos(datosAEnviar, endpointEmail);
+
+      // Puedes agregar un console.log para verificar la respuesta
+    } else {
+      console.error('Datos necesarios para el correo electrónico no disponibles.');
     }
   } catch (error) {
     console.error('Error al obtener o procesar los datos o al enviar el correo electrónico:', error);
   }
 };
+
 const crearMantenimiento = async () => {
-	try {
-		if (!enviando.value) {
-			enviando.value = true;
+    try {
+        if (!enviando.value) {
+            enviando.value = true;
 
-			const customerId = await crearcustomer();
+            const customerId = await crearcustomer();
 
-			const datosEnviar = {
-				address_maintenance: mantenimiento.value.address_maintenance,
-				description: mantenimiento.value.description.toUpperCase(),
-				id_headquarter: mantenimiento.value.headquarter,
-				id_category: mantenimiento.value.category,
-				id_customer: { id: customerId },
-				id_status: { id: 3 },
-			};
+            const datosEnviar = {
+                address_maintenance: mantenimiento.value.address_maintenance,
+                description: mantenimiento.value.description.toUpperCase(),
+                id_headquarter: mantenimiento.value.headquarter,
+                id_category: mantenimiento.value.category,
+                id_customer: { id: customerId },
+                id_status: { id: 3 },
+            };
 
-			const mantenimientoCreado = await maintenance_apiHandler.fetchPost(datosEnviar, maintenance_base_endpoint + "/" + actions.create);
+            const mantenimientoCreado = await maintenance_apiHandler.fetchPost(datosEnviar, maintenance_base_endpoint + "/" + actions.create);
 
-			if (!mantenimientoCreado || mantenimientoCreado.id === undefined) {
-				throw new Error('El nuevo mantenimiento no fue creado correctamente o no tiene un ID válido.');
-			}
+            if (!mantenimientoCreado || mantenimientoCreado.id === undefined) {
+                throw new Error('El nuevo mantenimiento no fue creado correctamente o no tiene un ID válido.');
+            }
 
-			const idMantenimiento = mantenimientoCreado.id;
+            const idMantenimiento = mantenimientoCreado.id;
 
-			mantenimiento.value.url_img = `URL de la imagen del mantenimiento ${idMantenimiento}`;
-			router.push({ name: 'ExportarMantenimiento', params: { id: idMantenimiento } });
-			await handleFileChange(idMantenimiento);
+            // Esperar a que se complete la carga de la imagen
+            await handleFileChange(idMantenimiento);
 
-			// Llama a la función enviarCorreo después de la redirección
-			await enviarCorreoDesdeCreated(idMantenimiento);
-		}
-	} catch (error) {
-		console.error('Error al crear el mantenimiento:', error);
-		alert('Hubo un problema al crear el mantenimiento. Por favor, inténtalo de nuevo más tarde.');
-		throw error;
-	} finally {
-		enviando.value = false;
-	}
+            // Llama a la función enviarCorreo después de la carga de la imagen
+            await enviarCorreoDesdeCreated(idMantenimiento);
+
+            // Redirige después de completar todas las operaciones asincrónicas
+            router.push({ name: 'ExportarMantenimiento', params: { id: idMantenimiento } });
+        }
+    } catch (error) {
+        console.error('Error al crear el mantenimiento:', error);
+        alert('Hubo un problema al crear el mantenimiento. Por favor, inténtalo de nuevo más tarde.');
+        throw error;
+    } finally {
+        enviando.value = false;
+    }
 };
 
+
 const handleFileChange = async (idMantenimiento) => {
-	try {
-		const selectedFile = document.getElementById('fileInput').files[0];
+    try {
+        const selectedFile = document.getElementById('fileInput').files;
 
-		if (selectedFile) {
-			const formData = new FormData();
-			formData.append('archivo', selectedFile);
+        if (selectedFile) {
+            const formData = new FormData();
+            const fotos = []
+            for (const archivo of selectedFile) {
 
-			const uploadUrl = `${maintenance_base_endpoint}/${actions.uploadImageMaintenance}/archivo/${idMantenimiento}`;
+                formData.append('archivo', archivo);
+            }
+            const uploadUrl = `${maintenance_base_endpoint}uploadMultipleImage/archivo/${idMantenimiento}`;
+            const uploadResponse = await maintenance_apiHandler.uploadMultiple(uploadUrl, formData);
+            if (uploadResponse) {
+                // Actualizar el campo url_img con la URL del archivo subido
+                mantenimiento.value.url_img = uploadResponse; // Actualiza según la estructura de tu objeto
+                const updateUrl = `${maintenance_base_endpoint}${actions.update}/${idMantenimiento}`;
+                // Actualizar en el servidor
+                const updateResponse = await maintenance_apiHandler.fetchPut(updateUrl, { url_img: uploadResponse });
 
-			// Subir archivo
-			const uploadResponse = await maintenance_apiHandler.uploadFile(uploadUrl, formData);
-
-			if (uploadResponse) {
-
-				// Actualizar el campo url_img con la URL del archivo subido
-				mantenimiento.value.url_img = uploadResponse; // Actualiza según la estructura de tu objeto
-
-
-				const updateUrl = `${maintenance_base_endpoint}/${actions.update}/${idMantenimiento}`;
-
-				// Actualizar en el servidor
-				const updateResponse = await maintenance_apiHandler.fetchPut(updateUrl, { url_img:JSON.parse (uploadResponse) });
-
-				if (updateResponse) {
-				} else {
-					console.error('Error al actualizar el campo url_img en el servidor');
-				}
-			} else {
-				console.error('Error al subir el archivo');
-			}
-		}
-	} catch (error) {
-		console.error('Error en la subida del archivo:', error);
-	}
+                if (updateResponse) {
+                } else {
+                    console.error('Error al actualizar el campo url_img en el servidor');
+                }
+            } else {
+                console.error('Error al subir el archivo');
+            }
+        }
+    } catch (error) {
+        console.error('Error en la subida del archivo:', error);
+    }
 };
 
 </script>
