@@ -167,7 +167,7 @@ export default class APIHandler {
 		};
 
 		try {
-            const response = await fetch(`${endpointEspecifico}`, options);
+			const response = await fetch(`${endpointEspecifico}`, options);
 			if (!response.ok) {
 				throw new Error(`Error en la solicitud: ${response.status} - ${response.statusText}`);
 			}
@@ -187,6 +187,8 @@ export const entidades = {
 	customer: "customer",
 	category: "category",
 	headquarter: "headquarter",
+	pqrs: "pqrs",
+	area: "area"
 }
 
 export const actions = {
