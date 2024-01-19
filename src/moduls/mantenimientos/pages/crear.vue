@@ -21,7 +21,7 @@
 						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.fullname" placeholder="nombre" label="Nombres y Apellidos" errormessage="Este campo es obligatorio*" :max="50" />
 					</div>
 					<div class="form-group">
-						<CountrySelector class="input-field2" type="text" inputId="floatingInputGroup2" v-model="mantenimiento.celphoneExt" placeholder="extencion" label="Extencion" errormessage="Este campo es obligatorio*" :max="10" />
+						<CountrySelector class="input-field2" type="text" inputId="floatingInputGroup2" v-model="mantenimiento.celphoneExt" placeholder="extencion" label="Pais o Indicativo" errormessage="Este campo es obligatorio*" :max="10" />
 						<InputText class="input-field" type="text" inputId="floatingInputGroup2" v-model="mantenimiento.celphone" placeholder="telefono" label="Número de Contacto" errormessage="Este campo es obligatorio*" @input="filterNonNumeric" :max="10" />
 					</div>
 					<div class="my-3">
@@ -32,7 +32,7 @@
 					</div>
 
 					<div class="my-3">
-						<selectS inputId="'floatingSelect'" :selected-value="mantenimiento.category" :label="'Categoria *'" :options="categoriaOptions" @update:select-value="mantenimiento.category = $event" :editable="!loading" />
+						<selectS inputId="'floatingSelect'" :selected-value="mantenimiento.category" :label="'Categoría *'" :options="categoriaOptions" @update:select-value="mantenimiento.category = $event" :editable="!loading" />
 					</div>
 
 					<div class="container">

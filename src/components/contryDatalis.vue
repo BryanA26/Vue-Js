@@ -141,7 +141,7 @@
 	// Verificar si hay más de un sufijo
 	const displaySuffix = suffixes.length > 1 ? '' : suffixes[0];
 
-	return `${country.translations?.spa?.common || country.name} (${root}${displaySuffix})`;
+	return ` (${root}${displaySuffix})`;
   };
   </script>
 
@@ -165,6 +165,6 @@
 	cursor: pointer;
   }
   li:hover {
-	background-color: rgb(231, 205, 205);
+	background-color: #f0f0f0;
   }
   </style>
