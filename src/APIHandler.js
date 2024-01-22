@@ -186,6 +186,7 @@ export const entidades = {
 	customer: "customer",
 	category: "category",
 	headquarter: "headquarter",
+	public_services: "public_services",
 }
 
 export const actions = {

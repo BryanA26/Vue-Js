@@ -5,6 +5,8 @@ import crear from '../moduls/pqrs/pages/crear.vue'
 import Exportar from '../moduls/pqrs/pages/exportPDF.vue'
 import ExportarMantenimiento from '../moduls/mantenimientos/pages/exportPDF.vue'
 import crearMantenimiento from '../moduls/mantenimientos/pages/crear.vue'
+import ExportarPublicServices from '../moduls/public_services/pages/exportPDF.vue'
+import crearPublicServices from '../moduls/public_services/pages/crear.vue'
 import ExportPdfCrinmo from '../pages/PDFcrinmo.vue'
 
 const routes = [
@@ -93,6 +95,16 @@ const routes_crinmo = [
 		path: '/pqrs/crear/',
 		name: 'Crear',
 		component: crear
+	},
+	{
+		path: '/public_services/exportPDF/:id',
+		name: 'ExportarPublicServices',
+		component: ExportarPublicServices,
+	},
+	{
+		path: '/public_services/crear/',
+		name: 'CrearPublicServicess',
+		component: crearPublicServices
 	},
 ]
 

@@ -19,6 +19,11 @@ const { apis } = toRefs(state)
 		<button class="custom-button">MANTENIMIENTOS</button>
 	  </router-link>
 	</div>
+	<div>
+	  <router-link to="/public_services/crear">
+		<button class="custom-button">SERVICIOS PÚBLICOS</button>
+	  </router-link>
+	</div>
   </template>
 
   <style>
