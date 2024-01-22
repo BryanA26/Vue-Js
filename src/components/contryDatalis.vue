@@ -11,6 +11,7 @@
 		  :id="inputId"
 		  placeholder="Extencion"
 		  required
+		  :autocomplete="autocomplete"
 		/>
 
 		<label :for="inputId">{{ label }}</label>
@@ -40,6 +41,8 @@
 	errorMessage: String,
 	label: String,
 	modelValue: String,
+	autocomplete:Boolean
+
   });
 
   const instance = getCurrentInstance();

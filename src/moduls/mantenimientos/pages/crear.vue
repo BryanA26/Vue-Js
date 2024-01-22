@@ -21,7 +21,7 @@
 						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.fullname" placeholder="nombre" label="Nombres y Apellidos" errormessage="Este campo es obligatorio*" :max="50" />
 					</div>
 					<div class="form-group">
-						<CountrySelector class="input-field2" type="text" inputId="floatingInputGroup2" v-model="mantenimiento.celphoneExt" placeholder="extencion" label="Pais o Indicativo" errormessage="Este campo es obligatorio*" :max="10" />
+						<CountrySelector class="input-field2" type="text" inputId="floatingInputGroup2" v-model="mantenimiento.celphoneExt" placeholder="extencion" label="Pais o Indicativo" errormessage="Este campo es obligatorio*" :max="10" :autocomplete="true"/>
 						<InputText class="input-field" type="text" inputId="floatingInputGroup2" v-model="mantenimiento.celphone" placeholder="telefono" label="Número de Contacto" errormessage="Este campo es obligatorio*" @input="filterNonNumeric" :max="10" />
 					</div>
 					<div class="my-3">
@@ -134,7 +134,7 @@ onMounted(async () => {
 
 const buscarClienteExistente = async (document, email) => {
 	try {
-		const endpoint = `${customer_base_endpoint}/${actions.getBy}/?document=${document}&email=${email}`;
+		const endpoint = `${customer_base_endpoint}/${actions.getBy}/?document=${document}`;
 		const clienteExistente = await maintenance_apiHandler.getRequest(endpoint);
 
 		return clienteExistente;
@@ -147,7 +147,7 @@ const buscarClienteExistente = async (document, email) => {
 const crearcustomer = async () => {
 	try {
 		// Validar si el cliente ya existe
-		const clienteExistente = await buscarClienteExistente(mantenimiento.value.document, mantenimiento.value.email);
+		const clienteExistente = await buscarClienteExistente(mantenimiento.value.document);
 		const celphone = `${mantenimiento.value.celphoneExt} ${mantenimiento.value.celphone}`; // Elimina el símbolo '+'
 		if (clienteExistente) {
 			// El cliente ya existe, retornar su ID
