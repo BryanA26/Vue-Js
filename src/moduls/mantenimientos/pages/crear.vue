@@ -21,7 +21,7 @@
 						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.fullname" placeholder="nombre" label="Nombres y Apellidos" errormessage="Este campo es obligatorio*" :max="50" />
 					</div>
 					<div class="my-3">
-						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.celphone" placeholder="telefono" label="Número de Contacto" errormessage="Este campo es obligatorio*" @input="filterNonNumeric" :max="10" />
+						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.cellphone" placeholder="telefono" label="Número de Contacto" errormessage="Este campo es obligatorio*" @input="filterNonNumeric" :max="10" />
 					</div>
 					<div class="my-3">
 						<InputText type="email" inputId="floatingInputGroup1" v-model="mantenimiento.email" placeholder="email" label="Correo electrónico" errormessage="Este campo es obligatorio*" :max="50" />
@@ -74,7 +74,7 @@ const mantenimiento = ref({
 	document_type: "",
 	document: "",
 	fullname: "",
-	celphone: "",
+	cellphone: "",
 	email: "",
 	address_maintenance: "",
 	category: "",
@@ -159,7 +159,7 @@ const crearcustomer = async () => {
 				fullname: mantenimiento.value.fullname.toUpperCase(),
 				document_type: mantenimiento.value.document_type,
 				email: mantenimiento.value.email,
-				celphone: mantenimiento.value.celphone,
+				cellphone: mantenimiento.value.cellphone,
 			};
 
 
