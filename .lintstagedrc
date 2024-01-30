@@ -1,0 +1,5 @@
+{
+	"**/*.{vue,js,mjs,cjs,ts}": [
+		"prettier --write"
+	]
+}
