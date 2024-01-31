@@ -80,7 +80,7 @@
 								</span>
 							</div>
 						</th>
-						<td v-if="mantenimiento.id_customer">{{ mantenimiento.id_customer.celphone }}</td>
+						<td v-if="mantenimiento.id_customer">{{ mantenimiento.id_customer.cellphone }}</td>
 					</tr>
 					<tr>
 						<th class="th_row_icon_spn">
@@ -231,7 +231,7 @@ const mantenimiento = ref({
 	document_type: "",
 	document: "",
 	fullname: "",
-	celphone: "",
+	cellphone: "",
 	email: "",
 	address: "",
 	category: "",

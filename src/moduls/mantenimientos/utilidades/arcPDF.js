@@ -142,7 +142,7 @@ export const generateHTMLContent = (mantenimiento) => {
 							</span>
 						</div>
 					</th>
-					<td>${mantenimiento.value ? mantenimiento.value.id_customer.celphone : mantenimiento.celphone}</td>
+					<td>${mantenimiento.value ? mantenimiento.value.id_customer.cellphone : mantenimiento.cellphone}</td>
 					</tr>
 				<tr>
 					<th>
