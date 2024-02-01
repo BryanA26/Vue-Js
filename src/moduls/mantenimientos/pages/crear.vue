@@ -63,6 +63,7 @@ import { ref, resolveDirective } from 'vue';
 import { onMounted } from 'vue';
 import { generateHTMLContent } from '../utilidades/arcPDF.JS'
 import {formatDate} from '../../utilidades/formarDate'
+import styles from '../utilidades/cssPlantilla.css';
 
 
 const router = useRouter()
@@ -177,20 +178,46 @@ const enviarCorreoDesdeCreated = async (idMantenimiento) => {
     // Obtener datos específicos del mantenimiento
     const res = await maintenance_apiHandler.cargarDatos(idMantenimiento, maintenance_base_endpoint + actions.getBy);
 
-    if (!res || !res.register_date) {
-      console.error('Los datos obtenidos de la API no contienen la fecha esperada.');
+    if (!res) {
+      console.error('No se obtuvieron datos de la API.');
       return;
+    }
+
+    if (res.register_date) {
+      // Si hay una fecha en los datos, formatearla y asignarla
+      res.register_date = formatDate(res.register_date);
+    } else {
+      console.warn('Los datos obtenidos de la API no contienen la fecha esperada.');
     }
 
     // Asignar los datos actualizados a tu variable de mantenimiento.value
     mantenimiento.value = { ...mantenimiento.value, ...res };
 
     // Verificar si los datos necesarios están presentes
-    if (mantenimiento.value && mantenimiento.value.email && mantenimiento.value.register_date) {
+    if (mantenimiento.value && mantenimiento.value.email) {
+      // Obtener el contenido HTML generado
+      const htmlContent = generateHTMLContent(mantenimiento.value);
+
+
+      // Combinar HTML y CSS
+      const bodyEmail = `
+        <html>
+          <head>
+            <style>
+              ${styles}
+            </style>
+          </head>
+          <body>
+            ${htmlContent}
+          </body>
+        </html>
+      `;
+
+      // Enviar el correo con la cadena combinada como cuerpo
       const datosAEnviar = {
         email: mantenimiento.value.email,
         subjectEmail: "PORTADA INMOBILIARIA",
-        bodyEmail: generateHTMLContent(mantenimiento.value),
+        bodyEmail: bodyEmail,
       };
 
       const endpointEmail = `${customer_base_endpoint}${actions.sendEmail}`;

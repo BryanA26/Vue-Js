@@ -1,64 +1,11 @@
 
-import { fecha, info, area, nombres, contacto, documento, terminos, email, mensaje } from '../../../components/svg';
-import maintenance_apiHandler, { actions, customer_base_endpoint, category_base_endpoint, headquarter_base_endpoint, maintenance_base_endpoint } from '../APIHandler.mantenimientos';
-
+import { fecha, info, area, nombres, contacto, documento, terminos, email, mensaje, estado} from '../../../components/svg';
+import { maintenance_base_deployed_enpoint } from '../APIHandler.mantenimientos';
 export const generateHTMLContent = (mantenimiento) => {
 
-	return `
+	const htmlWithStyles = `
   <html>
 		<head>
-			<style scoped>
-
-			table {
-
-				border-collapse: collapse;
-				margin: auto;
-				width: auto;
-			}
-
-			.icons {
-				display: inline-flex;
-				align-items: center;
-				gap: 0.1rem;
-			}
-
-			h3{
-				text-align: center;
-				margin-top:3.25rem;
-				margin-bottom: 3.25rem;
-				font-family: Arial, Helvetica, sans-serif;
-			}
-
-			th,
-			td {
-				padding: 10px;
-				font-size: 12px;
-				text-align: center;
-				max-width: 200px !important;
-				height: 30px;
-				font-family: Arial, Helvetica, sans-serif;
-				border: 0.0625rem solid #ccc;
-				word-wrap: break-word;
-				white-space: normal;
-			}
-
-			th {
-				background-color: #f2f2f2;
-				print-color-adjust: exact;
-				-webkit-print-color-adjust:exact;
-			}
-
-			.img_logo {
-				background-image: url('https://portadainmobiliaria.com/webapi/Logo_Nit.jpg');
-				height:6.25rem;
-				width:12rem;
-				background-size: cover;
-				print-color-adjust: exact;
-				-webkit-print-color-adjust:exact;
-			}
-
-			</style>
-
 			<div style="margin-top: 20px;">
 				<div class="img_logo">
 				</div>
@@ -106,7 +53,7 @@ export const generateHTMLContent = (mantenimiento) => {
 				<tr>
 					<th>
 						<div class="icons">
-							${status}
+							${estado}
 							<span>
 								ESTADO
 							</span>
@@ -121,8 +68,8 @@ export const generateHTMLContent = (mantenimiento) => {
 							</span>
 						</div>
 					</th>
-					<td>${mantenimiento.value ? mantenimiento.value.id : mantenimiento.id}</td>
-				</tr>
+					<td><strong>${mantenimiento.value ? mantenimiento.value.id : mantenimiento.id}</strong></td>
+					</tr>
 				<tr>
 					<th>
 						<div class="icons">
@@ -182,7 +129,6 @@ export const generateHTMLContent = (mantenimiento) => {
 				</tbody>
 				</table><br>
 				<div>
-				<h2>${mensaje}</h2>
 				<h3>IMAGENES</h3>
 				<ul>
 				${getImagenesEnlaces(mantenimiento.value || mantenimiento)}
@@ -191,36 +137,39 @@ export const generateHTMLContent = (mantenimiento) => {
 
 				<!-- Agrega más filas según sea necesario -->
 	</body>
-	</html>
-	`;
-  };
-  function getImagenesEnlaces(mantenimiento) {
+	</html>`
+	return htmlWithStyles;
+};
+function getImagenesEnlaces(mantenimiento) {
 	// Verifica si la propiedad 'url_img' existe y es un array
 	if (mantenimiento && mantenimiento.url_img) {
-	  let nombresArchivos;
+		let nombresArchivos;
 
-	  try {
-		// Intenta analizar la cadena JSON
-		nombresArchivos = JSON.parse(mantenimiento.url_img);
-	  } catch (error) {
-		// Si hay un error al analizar, asume que la cadena ya es un array
-		nombresArchivos = mantenimiento.url_img;
-	  }
+		try {
+			// Intenta analizar la cadena JSON
+			nombresArchivos = JSON.parse(mantenimiento.url_img);
+		} catch (error) {
+			// Si hay un error al analizar, asume que la cadena ya es un array
+			nombresArchivos = mantenimiento.url_img;
+		}
 
-	  // Si nombresArchivos es un array, construye los enlaces
-	  if (Array.isArray(nombresArchivos)) {
-		const maintenanceId = mantenimiento.id || mantenimiento.value.id; // Usar mantenimiento.id si existe, de lo contrario mantenimiento.value.id
-		const enlaces = nombresArchivos.map(nombreArchivo => {
-		  const urlImagen = `${maintenance_base_endpoint}${maintenanceId}/${nombreArchivo}`;
-		  return `<li><a href="${urlImagen}" target="_blank">Enlace a la imagen</a></li>`;
-		});
+		// Si nombresArchivos es un array, construye las etiquetas de imagen con estilos
+		if (Array.isArray(nombresArchivos)) {
+			const maintenanceId = mantenimiento.id;
+			const imagenes = nombresArchivos.map(nombreArchivo => {
+				const urlImagen = `${maintenance_base_deployed_enpoint}${maintenanceId}/${nombreArchivo}`;
+				return `<img src="${urlImagen}" alt="Imagen" style="max-width: 15%; height: auto; margin-right: 5px; display: inline-block;">`;
+			});
 
-		return enlaces.join('');
-	  } else {
-		return '<li>No hay imágenes disponibles</li>';
-	  }
+			// Utiliza un div para contener las imágenes y muestra horizontalmente
+			return `<div>${imagenes.join('')}</div>`;
+		} else {
+			// Si no hay imágenes disponibles
+			return '<div>No hay imágenes disponibles</div>';
+		}
 	} else {
-	  return '<li>No hay imágenes disponibles</li>';
+		// Si no hay imágenes disponibles
+		return '<div>No hay imágenes disponibles</div>';
 	}
-  }
+}
 
