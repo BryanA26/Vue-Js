@@ -120,10 +120,9 @@
 			</table>
 		</div>
 		<div class="btn_download_pdf">
-      <button
-        class="btn btn-primary" type="button" id="download-pdf-button" @click="generatePDF" :disabled="descargandoPDF">Descargar PDF
-      </button>
-    </div>
+			<button class="btn btn-primary" type="button" id="download-pdf-button" @click="generatePDF" :disabled="descargandoPDF">Descargar PDF
+			</button>
+		</div>
 	</body>
 </template>
 
@@ -219,8 +218,8 @@ import iconsSvg from '../../../components/iconsSvg.vue';
 import maintenance_apiHandler, { actions, maintenance_base_endpoint } from '../APIHandler.mantenimientos';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import {generateHTMLContent} from '../utilidades/arcPDF.JS'
-import {formatDate} from '../../utilidades/formarDate'
+import { generateHTMLContent } from '../utilidades/arcPDF.JS'
+import { formatDate } from '../../utilidades/formarDate'
 import styles from '../utilidades/cssPlantilla.css';
 const VITE_PORTADA_API = import.meta.env.VITE_PORTADA_API_URL
 const route = useRoute()
@@ -250,74 +249,73 @@ const estilos = `
 `;
 const descargandoPDF = ref(false); // Bandera para rastrear si se está descargando el PDF
 const generatePDF = async () => {
-  // Evitar que se inicie otra descarga mientras una está en progreso
-  if (descargandoPDF.value) {
-    return;
-  }
+	// Evitar que se inicie otra descarga mientras una está en progreso
+	if (descargandoPDF.value) {
+		return;
+	}
 
-  try {
-    // Establecer la bandera a true para desactivar el botón
-    descargandoPDF.value = true;
+	try {
+		// Establecer la bandera a true para desactivar el botón
+		descargandoPDF.value = true;
 
-    // Obtener el contenido HTML generado
-    const htmlContent = generateHTMLContent(mantenimiento);
+		// Obtener el contenido HTML generado
+		const htmlContent = generateHTMLContent(mantenimiento);
 
-    // Realizar la solicitud al servidor
-    const response = await fetch(VITE_PORTADA_API, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        template: htmlContent,
-        styles: estilos,
-      }),
-    });
+		// Realizar la solicitud al servidor
+		const response = await fetch(VITE_PORTADA_API, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				template: htmlContent,
+				styles: estilos,
+			}),
+		});
 
-    // Verificar si la respuesta es exitosa (código 200 OK)
-    if (response.ok) {
-      // Proceder con la apertura del PDF en una nueva pestaña
-      const pdfBlob = await response.blob();
-      const pdfUrl = window.URL.createObjectURL(pdfBlob);
+		// Verificar si la respuesta es exitosa (código 200 OK)
+		if (response.ok) {
+			// Proceder con la apertura del PDF en una nueva pestaña
+			const pdfBlob = await response.blob();
+			const pdfUrl = window.URL.createObjectURL(pdfBlob);
 
-      // Crear un elemento de enlace invisible
-      const link = document.createElement('a');
-      link.href = pdfUrl;
-      link.target = '_blank'; // Abrir en una nueva pestaña
-      link.download = `${mantenimiento.value.id}.pdf`;
-      link.click();
-    } else {
-      // Manejar el error de manera adecuada
-      console.error('Error en la solicitud:', response.statusText);
-    }
-  } catch (error) {
-    console.error('Error al generar o abrir el PDF:', error);
-  } finally {
-    // Establecer la bandera a false para volver a activar el botón
-    descargandoPDF.value = false;
-  }
+			// Crear un elemento de enlace invisible
+			const link = document.createElement('a');
+			link.href = pdfUrl;
+			link.target = '_blank'; // Abrir en una nueva pestaña
+			link.download = `MANTENIMIENTO_${mantenimiento.value.id}.pdf`;
+			link.click();
+		} else {
+			// Manejar el error de manera adecuada
+			console.error('Error en la solicitud:', response.statusText);
+		}
+	} catch (error) {
+		console.error('Error al generar o abrir el PDF:', error);
+	} finally {
+		// Establecer la bandera a false para volver a activar el botón
+		descargandoPDF.value = false;
+	}
 };
 const created = async () => {
-  try {
-    const id = route.params.id;
-    const res = await maintenance_apiHandler.cargarDatos(id, maintenance_base_endpoint + actions.getBy);
-    if (!res) {
-      console.error('No se obtuvieron datos de la API.');
-      return;
-    }
-    if (res.register_date) {
-      // Si hay una fecha en los datos, formatearla y asignarla
-      res.register_date = formatDate(res.register_date);
-    } else {
-      console.warn('Los datos obtenidos de la API no contienen la fecha esperada.');
-    }
-    // Asignar los datos actualizados a tu variable de mantenimiento.value
-    mantenimiento.value = { ...mantenimiento.value, ...res };
+	try {
+		const id = route.params.id;
+		const res = await maintenance_apiHandler.cargarDatos(id, maintenance_base_endpoint + actions.getBy);
+		if (!res) {
+			console.error('No se obtuvieron datos de la API.');
+			return;
+		}
+		if (res.register_date) {
+			// Si hay una fecha en los datos, formatearla y asignarla
+			res.register_date = formatDate(res.register_date);
+		} else {
+			console.warn('Los datos obtenidos de la API no contienen la fecha esperada.');
+		}
+		// Asignar los datos actualizados a tu variable de mantenimiento.value
+		mantenimiento.value = { ...mantenimiento.value, ...res };
 
-    // Resto de tu lógica...
-  } catch (error) {
-    console.error('Error al obtener o procesar los datos:', error);
-  }
+	} catch (error) {
+		console.error('Error al obtener o procesar los datos:', error);
+	}
 };
 
 

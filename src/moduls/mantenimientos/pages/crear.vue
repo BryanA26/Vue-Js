@@ -62,7 +62,7 @@ import { useRouter } from 'vue-router';
 import { ref, resolveDirective } from 'vue';
 import { onMounted } from 'vue';
 import { generateHTMLContent } from '../utilidades/arcPDF.JS'
-import {formatDate} from '../../utilidades/formarDate'
+import { formatDate } from '../../utilidades/formarDate'
 import styles from '../utilidades/cssPlantilla.css';
 
 
@@ -174,33 +174,33 @@ const crearcustomer = async () => {
 	}
 };
 const enviarCorreoDesdeCreated = async (idMantenimiento) => {
-  try {
-    // Obtener datos específicos del mantenimiento
-    const res = await maintenance_apiHandler.cargarDatos(idMantenimiento, maintenance_base_endpoint + actions.getBy);
+	try {
+		// Obtener datos específicos del mantenimiento
+		const res = await maintenance_apiHandler.cargarDatos(idMantenimiento, maintenance_base_endpoint + actions.getBy);
 
-    if (!res) {
-      console.error('No se obtuvieron datos de la API.');
-      return;
-    }
+		if (!res) {
+			console.error('No se obtuvieron datos de la API.');
+			return;
+		}
 
-    if (res.register_date) {
-      // Si hay una fecha en los datos, formatearla y asignarla
-      res.register_date = formatDate(res.register_date);
-    } else {
-      console.warn('Los datos obtenidos de la API no contienen la fecha esperada.');
-    }
+		if (res.register_date) {
+			// Si hay una fecha en los datos, formatearla y asignarla
+			res.register_date = formatDate(res.register_date);
+		} else {
+			console.warn('Los datos obtenidos de la API no contienen la fecha esperada.');
+		}
 
-    // Asignar los datos actualizados a tu variable de mantenimiento.value
-    mantenimiento.value = { ...mantenimiento.value, ...res };
+		// Asignar los datos actualizados a tu variable de mantenimiento.value
+		mantenimiento.value = { ...mantenimiento.value, ...res };
 
-    // Verificar si los datos necesarios están presentes
-    if (mantenimiento.value && mantenimiento.value.email) {
-      // Obtener el contenido HTML generado
-      const htmlContent = generateHTMLContent(mantenimiento.value);
+		// Verificar si los datos necesarios están presentes
+		if (mantenimiento.value && mantenimiento.value.email) {
+			// Obtener el contenido HTML generado
+			const htmlContent = generateHTMLContent(mantenimiento.value);
 
 
-      // Combinar HTML y CSS
-      const bodyEmail = `
+			// Combinar HTML y CSS
+			const bodyEmail = `
         <html>
           <head>
             <style>
@@ -213,99 +213,99 @@ const enviarCorreoDesdeCreated = async (idMantenimiento) => {
         </html>
       `;
 
-      // Enviar el correo con la cadena combinada como cuerpo
-      const datosAEnviar = {
-        email: mantenimiento.value.email,
-        subjectEmail: "PORTADA INMOBILIARIA",
-        bodyEmail: bodyEmail,
-      };
+			// Enviar el correo con la cadena combinada como cuerpo
+			const datosAEnviar = {
+				email: mantenimiento.value.email,
+				subjectEmail: "PORTADA INMOBILIARIA",
+				bodyEmail: bodyEmail,
+			};
 
-      const endpointEmail = `${customer_base_endpoint}${actions.sendEmail}`;
-      const response = await maintenance_apiHandler.enviarDatosEspecificos(datosAEnviar, endpointEmail);
+			const endpointEmail = `${customer_base_endpoint}${actions.sendEmail}`;
+			const response = await maintenance_apiHandler.enviarDatosEspecificos(datosAEnviar, endpointEmail);
 
-      // Puedes agregar un console.log para verificar la respuesta
-    } else {
-      console.error('Datos necesarios para el correo electrónico no disponibles.');
-    }
-  } catch (error) {
-    console.error('Error al obtener o procesar los datos o al enviar el correo electrónico:', error);
-  }
+			// Puedes agregar un console.log para verificar la respuesta
+		} else {
+			console.error('Datos necesarios para el correo electrónico no disponibles.');
+		}
+	} catch (error) {
+		console.error('Error al obtener o procesar los datos o al enviar el correo electrónico:', error);
+	}
 };
 
 const crearMantenimiento = async () => {
-    try {
-        if (!enviando.value) {
-            enviando.value = true;
+	try {
+		if (!enviando.value) {
+			enviando.value = true;
 
-            const customerId = await crearcustomer();
+			const customerId = await crearcustomer();
 
-            const datosEnviar = {
-                address_maintenance: mantenimiento.value.address_maintenance,
-                description: mantenimiento.value.description.toUpperCase(),
-                id_headquarter: mantenimiento.value.headquarter,
-                id_category: mantenimiento.value.category,
-                id_customer: { id: customerId },
-                id_status: { id: 3 },
-            };
+			const datosEnviar = {
+				address_maintenance: mantenimiento.value.address_maintenance,
+				description: mantenimiento.value.description.toUpperCase(),
+				id_headquarter: mantenimiento.value.headquarter,
+				id_category: mantenimiento.value.category,
+				id_customer: { id: customerId },
+				id_status: { id: 3 },
+			};
 
-            const mantenimientoCreado = await maintenance_apiHandler.fetchPost(datosEnviar, maintenance_base_endpoint + "/" + actions.create);
+			const mantenimientoCreado = await maintenance_apiHandler.fetchPost(datosEnviar, maintenance_base_endpoint + "/" + actions.create);
 
-            if (!mantenimientoCreado || mantenimientoCreado.id === undefined) {
-                throw new Error('El nuevo mantenimiento no fue creado correctamente o no tiene un ID válido.');
-            }
+			if (!mantenimientoCreado || mantenimientoCreado.id === undefined) {
+				throw new Error('El nuevo mantenimiento no fue creado correctamente o no tiene un ID válido.');
+			}
 
-            const idMantenimiento = mantenimientoCreado.id;
+			const idMantenimiento = mantenimientoCreado.id;
 
-            // Esperar a que se complete la carga de la imagen
-            await handleFileChange(idMantenimiento);
+			// Esperar a que se complete la carga de la imagen
+			await handleFileChange(idMantenimiento);
 
-            // Llama a la función enviarCorreo después de la carga de la imagen
-            await enviarCorreoDesdeCreated(idMantenimiento);
+			// Llama a la función enviarCorreo después de la carga de la imagen
+			await enviarCorreoDesdeCreated(idMantenimiento);
 
-            // Redirige después de completar todas las operaciones asincrónicas
-            router.push({ name: 'ExportarMantenimiento', params: { id: idMantenimiento } });
-        }
-    } catch (error) {
-        console.error('Error al crear el mantenimiento:', error);
-        alert('Hubo un problema al crear el mantenimiento. Por favor, inténtalo de nuevo más tarde.');
-        throw error;
-    } finally {
-        enviando.value = false;
-    }
+			// Redirige después de completar todas las operaciones asincrónicas
+			router.push({ name: 'ExportarMantenimiento', params: { id: idMantenimiento } });
+		}
+	} catch (error) {
+		console.error('Error al crear el mantenimiento:', error);
+		alert('Hubo un problema al crear el mantenimiento. Por favor, inténtalo de nuevo más tarde.');
+		throw error;
+	} finally {
+		enviando.value = false;
+	}
 };
 
 
 const handleFileChange = async (idMantenimiento) => {
-    try {
-        const selectedFile = document.getElementById('fileInput').files;
+	try {
+		const selectedFile = document.getElementById('fileInput').files;
 
-        if (selectedFile) {
-            const formData = new FormData();
-            const fotos = []
-            for (const archivo of selectedFile) {
+		if (selectedFile) {
+			const formData = new FormData();
+			const fotos = []
+			for (const archivo of selectedFile) {
 
-                formData.append('archivo', archivo);
-            }
-            const uploadUrl = `${maintenance_base_endpoint}uploadMultipleImage/archivo/${idMantenimiento}`;
-            const uploadResponse = await maintenance_apiHandler.uploadMultiple(uploadUrl, formData);
-            if (uploadResponse) {
-                // Actualizar el campo url_img con la URL del archivo subido
-                mantenimiento.value.url_img = uploadResponse; // Actualiza según la estructura de tu objeto
-                const updateUrl = `${maintenance_base_endpoint}${actions.update}/${idMantenimiento}`;
-                // Actualizar en el servidor
-                const updateResponse = await maintenance_apiHandler.fetchPut(updateUrl, { url_img: uploadResponse });
+				formData.append('archivo', archivo);
+			}
+			const uploadUrl = `${maintenance_base_endpoint}uploadMultipleImage/archivo/${idMantenimiento}`;
+			const uploadResponse = await maintenance_apiHandler.uploadMultiple(uploadUrl, formData);
+			if (uploadResponse) {
+				// Actualizar el campo url_img con la URL del archivo subido
+				mantenimiento.value.url_img = uploadResponse; // Actualiza según la estructura de tu objeto
+				const updateUrl = `${maintenance_base_endpoint}${actions.update}/${idMantenimiento}`;
+				// Actualizar en el servidor
+				const updateResponse = await maintenance_apiHandler.fetchPut(updateUrl, { url_img: uploadResponse });
 
-                if (updateResponse) {
-                } else {
-                    console.error('Error al actualizar el campo url_img en el servidor');
-                }
-            } else {
-                console.error('Error al subir el archivo');
-            }
-        }
-    } catch (error) {
-        console.error('Error en la subida del archivo:', error);
-    }
+				if (updateResponse) {
+				} else {
+					console.error('Error al actualizar el campo url_img en el servidor');
+				}
+			} else {
+				console.error('Error al subir el archivo');
+			}
+		}
+	} catch (error) {
+		console.error('Error en la subida del archivo:', error);
+	}
 };
 
 </script>
