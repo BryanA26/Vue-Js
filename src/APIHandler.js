@@ -130,8 +130,7 @@ export default class APIHandler {
 		}
 	}
 
-
-	async uploadFile(uploadUrl, formData) {
+	async uploadMultiple(uploadUrl, formData) {
 		const uploadOptions = {
 			method: 'POST',
 			body: formData,
@@ -156,6 +155,28 @@ export default class APIHandler {
 			throw new Error(`Error en la subida del archivo: ${error.message}`);
 		}
 	};
+	async enviarDatosEspecificos(datos, endpointEspecifico) {
+		const options = {
+			method: 'POST',
+			headers: {
+				Authorization: this.apiToken,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(datos),
+		};
+
+		try {
+            const response = await fetch(`${endpointEspecifico}`, options);
+			if (!response.ok) {
+				throw new Error(`Error en la solicitud: ${response.status} - ${response.statusText}`);
+			}
+			const responseData = await response.json();
+			return responseData;
+		} catch (error) {
+			console.error('Error al enviar los datos al endpoint específico:', error);
+			throw new Error('Hubo un problema al enviar los datos al endpoint específico');
+		}
+	}
 
 
 }
@@ -172,5 +193,7 @@ export const actions = {
 	getBy: "getBy",
 	create: "create",
 	update: "update",
+	sendEmail: "sendEmail",
 	uploadImageMaintenance: "uploadImageMaintenance",
 }
+
