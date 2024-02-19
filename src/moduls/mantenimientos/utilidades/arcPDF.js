@@ -134,7 +134,6 @@ export const generateHTMLContent = (mantenimiento) => {
 				${getImagenesEnlaces(mantenimiento.value || mantenimiento)}
 				</ul>
 			  </div>
-
 				<!-- Agrega más filas según sea necesario -->
 	</body>
 	</html>`
@@ -158,7 +157,7 @@ function getImagenesEnlaces(mantenimiento) {
 			const maintenanceId = mantenimiento.id;
 			const imagenes = nombresArchivos.map(nombreArchivo => {
 				const urlImagen = `${maintenance_base_deployed_enpoint}${maintenanceId}/${nombreArchivo}`;
-				return `<img src="${urlImagen}" alt="Imagen" style="max-width: 15%; height: auto; margin-right: 5px; display: inline-block;">`;
+				return `<img src=${urlImagen} alt="Imagen" style="max-width: 15%; height: auto; margin-right: 5px; display: inline-block;">`;
 			});
 
 			// Utiliza un div para contener las imágenes y muestra horizontalmente
