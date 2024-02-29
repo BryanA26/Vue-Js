@@ -1,6 +1,8 @@
 import APIHandler, { entidades, actions } from '../../APIHandler';
 const BASE_URL = import.meta.env.VITE_BASE_URL_API_V2
+const BASE_URL_DEPLOYED = import.meta.env.VITE_DEPLOYE_API_URL
 
+const maintenance_base_deployed_enpoint = `${BASE_URL_DEPLOYED}/${entidades.maintenance}/`
 const maintenance_base_endpoint = `${BASE_URL}/${entidades.maintenance}/`;
 const customer_base_endpoint = `${BASE_URL}/${entidades.customer}/`
 const headquarter_base_endpoint = `${BASE_URL}/${entidades.headquarter}/`
@@ -14,6 +16,7 @@ export {
 	headquarter_base_endpoint,
 	category_base_endpoint,
 	maintenance_base_endpoint,
+	maintenance_base_deployed_enpoint,
 	actions,
 };
 export default maintenance_apiHandler;
