@@ -68,7 +68,7 @@ export const generateHTMLContent = (mantenimiento) => {
 							</span>
 						</div>
 					</th>
-					<td><strong>${mantenimiento.value ? mantenimiento.value.id : mantenimiento.id}</strong></td>
+					<td><strong>${mantenimiento.value ? mantenimiento.value.record : mantenimiento.record}</strong></td>
 					</tr>
 				<tr>
 					<th>

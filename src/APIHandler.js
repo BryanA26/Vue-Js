@@ -177,7 +177,20 @@ export default class APIHandler {
 			throw new Error('Hubo un problema al enviar los datos al endpoint específico');
 		}
 	}
-
+	async generateRecord(doc) {
+        const last5characteresDocument = doc.slice(-5);
+        const uuid = this.generateUUID().replaceAll("-", "");
+        const record = last5characteresDocument + uuid;
+        return record.substring(0, 25);
+    }
+	generateUUID() {
+		// Genera un UUID v4 sin guiones
+		return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+		  var r = Math.random() * 16 | 0,
+			  v = c == 'x' ? r : (r & 0x3 | 0x8);
+		  return v.toString(16);
+		});
+	  }
 
 }
 
