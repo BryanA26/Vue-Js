@@ -283,7 +283,7 @@ const crearMantenimiento = async () => {
 const handleFileChange = async (idMantenimiento) => {
 	try {
 		if (files) {
-			console.log(files.value)
+
 			const formData = new FormData();
 			const fotos = []
 			for (const archivo of files.value) {
