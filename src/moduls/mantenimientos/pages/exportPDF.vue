@@ -59,7 +59,7 @@
 								</span>
 							</div>
 						</th>
-						<td>{{ mantenimiento.id }}</td>
+						<td>{{ mantenimiento.record }}</td>
 					</tr>
 					<tr>
 						<th class="th_row_icon_spn">

@@ -39,7 +39,7 @@
 					</div>
 					<div class="my-3">
 						<label style="color:rgba(33, 37, 41, 0.75)">Cargar Imagen*</label>
-						<FileInput :buttonText="'Subir Imagen'" :textValue="mantenimiento.url_img" id="archivo" name="archivo" :inputId="'fileInput'" :acceptedFileTypes="'image/jpeg'" />
+						<FileInput @on-change-file="(eventFiles) => (files = eventFiles)" />
 					</div>
 
 					<button type="submit" class="btn btn-primary" :disabled="enviando">ENVIAR</button>
@@ -69,6 +69,7 @@ import styles from '../utilidades/cssPlantilla.css';
 const router = useRouter()
 const enviando = ref(false)
 const loading = ref(false)
+const files = ref([])
 
 const mantenimiento = ref({
 	headquarter: "",
@@ -238,6 +239,8 @@ const crearMantenimiento = async () => {
 			enviando.value = true;
 
 			const customerId = await crearcustomer();
+            // Generar el radicado
+            const radicado = await maintenance_apiHandler.generateRecord(mantenimiento.value.document); // Ajusta el parámetro según corresponda
 
 			const datosEnviar = {
 				address_maintenance: mantenimiento.value.address_maintenance,
@@ -246,7 +249,9 @@ const crearMantenimiento = async () => {
 				id_category: mantenimiento.value.category,
 				id_customer: { id: customerId },
 				id_status: { id: 3 },
-			};
+				finalized: false,
+                record: radicado
+            };
 
 			const mantenimientoCreado = await maintenance_apiHandler.fetchPost(datosEnviar, maintenance_base_endpoint + "/" + actions.create);
 
@@ -277,12 +282,11 @@ const crearMantenimiento = async () => {
 
 const handleFileChange = async (idMantenimiento) => {
 	try {
-		const selectedFile = document.getElementById('fileInput').files;
+		if (files) {
 
-		if (selectedFile) {
 			const formData = new FormData();
 			const fotos = []
-			for (const archivo of selectedFile) {
+			for (const archivo of files.value) {
 
 				formData.append('archivo', archivo);
 			}
