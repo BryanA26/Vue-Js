@@ -10,11 +10,6 @@ const { apis } = toRefs(state)
 
 <template>
 	<div>
-	  <router-link to="/pqrs/crear">
-		<button class="custom-button">PQRS</button>
-	  </router-link>
-	</div>
-	<div>
 	  <router-link to="/mantenimientos/crear">
 		<button class="custom-button">MANTENIMIENTOS</button>
 	  </router-link>

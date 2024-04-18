@@ -42,6 +42,16 @@
 						<FileInput @on-change-file="(eventFiles) => (files = eventFiles)" />
 					</div>
 
+					<div class="mb-3">
+						<label for="gdprCheck" class="form-label" style="color:rgba(33, 37, 41, 0.75)">Reglamento General de Protección de Datos *</label>
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value="" v-model="mantenimiento.gdpr" id="defaultCheck1" required>
+							<label class="form-check-label" for="defaultCheck1">
+								Acepto el consentimiento para tratamiento de datos personales. Acepto el manual de políticas
+								y procedimientos.
+							</label>
+						</div>
+					</div>
 					<button type="submit" class="btn btn-primary" :disabled="enviando">ENVIAR</button>
 
 				</form>

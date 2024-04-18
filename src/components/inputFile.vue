@@ -21,7 +21,8 @@
 		<label for="fileInput" class="file-label">
 		  <div v-if="isDraggingFile">Suelta tus imágenes aquí</div>
 		  <div v-else>
-			Arrastra tus archivos o <strong>haz clic aquí</strong> para subirlos
+			Arrastra tus archivos o <strong>haz clic aquí</strong> para subirlos,
+			maximo <strong>10</strong> archivos permitidos
 			<p class="error-img">
 			  Las imágenes en formato JPG o JPEG, archivos PDF y WORD deben pesar como máximo 1 MB cada uno. Los videos MP4 deben pesar como máximo 20 MB cada uno.
 			</p>
@@ -29,10 +30,13 @@
 		</label>
 
 		<div class="preview-container mt-4" v-if="files && files.length">
-		  <div v-for="(file, index) in files" :key="index" class="preview-card">
-			<div>
-			  <div v-html="getFileIcon(file)"></div>
-			  <p class="truncateText">{{ file.name }}</p>
+			<div v-for="(file, index) in files" :key="index" class="preview-card">
+				<div>
+				<!-- Utiliza v-if para renderizar la imagen si el archivo es una imagen -->
+				<img v-if="isImage(file)" class="preview-img" :src="generateURL(file)" />
+				<!-- Utiliza v-if para renderizar el icono si el archivo no es una imagen -->
+				<div v-else v-html="getFileIcon(file)"></div>
+				<p class="truncateText">{{ file.name }}</p>
 			</div>
 			<div>
 			  <button
@@ -62,7 +66,7 @@
 <script setup>
 import { ref } from 'vue'
 import { pdf, docs, img, video } from './svg.js'
-
+const emit = defineEmits(["onChangeFile"])
 const files = ref([])
 const isDraggingFile = ref(false)
 const inputFile = ref()
@@ -71,6 +75,17 @@ let modalMessage = ''
 let modalLink = ''
 let modalLinkText = ''
 
+function isImage(file) {
+  return file.type.includes('image');
+}
+
+function generateURL(file) {
+  const fileSrc = URL.createObjectURL(file)
+  setTimeout(() => {
+    URL.revokeObjectURL(fileSrc)
+  }, 2000)
+  return fileSrc
+}
 function getFileIcon(file) {
 	if (file.type.includes('pdf')) {
 		return pdf
@@ -293,5 +308,12 @@ function mostrarModal(message, link = null) {
 	color: #000;
 	text-decoration: none;
 	cursor: pointer;
+}
+.preview-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 5px;
+  border: 1px solid #a2a2a2;
+  background-color: #a2a2a2;
 }
 </style>
