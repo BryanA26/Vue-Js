@@ -156,7 +156,10 @@ function getImagenesEnlaces(mantenimiento) {
 		if (Array.isArray(nombresArchivos)) {
 			const maintenanceId = mantenimiento.id;
 			const imagenes = nombresArchivos.map(nombreArchivo => {
-				const urlImagen = `${maintenance_base_deployed_enpoint}${maintenanceId}/${nombreArchivo}`;
+				// Obtén la extensión del nombre de archivo
+				const extension = nombreArchivo.split('.').pop();
+				// Construye la URL de la imagen utilizando la extensión del archivo
+				const urlImagen = `${maintenance_base_deployed_enpoint}/phpuploadfiles/files/maintenance/${maintenanceId}/${extension}/${nombreArchivo}`;
 				return `<img src=${urlImagen} alt="Imagen" style="max-width: 15%; height: auto; margin-right: 5px; display: inline-block;">`;
 			});
 

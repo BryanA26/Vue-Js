@@ -218,7 +218,7 @@ import iconsSvg from '../../../components/iconsSvg.vue';
 import maintenance_apiHandler, { actions, maintenance_base_endpoint } from '../APIHandler.mantenimientos';
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { generateHTMLContent } from '../utilidades/arcPDF.JS'
+import { generateHTMLContent } from '../utilidades/arcPDF.js'
 import { formatDate } from '../../utilidades/formarDate'
 import styles from '../utilidades/cssPlantilla.css';
 const VITE_PORTADA_API = import.meta.env.VITE_PORTADA_API_URL

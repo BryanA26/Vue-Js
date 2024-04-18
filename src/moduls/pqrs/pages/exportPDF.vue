@@ -216,7 +216,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import pqrs_apiHandler, { actions, customer_base_endpoint, pqrs_base_endpoint } from '../../pqrs/APIHandler.pqrs';
 import { formatDate } from '../../utilidades/formarDate';
-import { generateHTMLContent } from '../utilidades/arcPDF.JS'
+import { generateHTMLContent } from '../utilidades/arcPDF.js'
 
 
 const route = useRoute()
