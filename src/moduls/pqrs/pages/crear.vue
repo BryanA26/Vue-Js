@@ -62,7 +62,7 @@ import { useRouter } from 'vue-router';
 import { onMounted, ref} from 'vue';
 import { formatDate } from '../../utilidades/formarDate';
 import pqrs_apiHandler, { actions, customer_base_endpoint, pqrs_base_endpoint, area_base_endpoint } from '../APIHandler.pqrs'
-import { generateHTMLContent } from '../utilidades/arcPDF.JS'
+import { generateHTMLContent } from '../utilidades/arcPDF.js'
 
 
 const router = useRouter()

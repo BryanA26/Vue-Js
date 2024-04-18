@@ -45,7 +45,7 @@
 					<div class="mb-3">
 						<label for="gdprCheck" class="form-label" style="color:rgba(33, 37, 41, 0.75)">Reglamento General de Protección de Datos *</label>
 						<div class="form-check">
-							<input class="form-check-input" type="checkbox" value="" v-model="mantenimiento.gdpr" id="defaultCheck1" required>
+							<input class="form-check-input" type="checkbox" value="" id="defaultCheck1" required>
 							<label class="form-check-label" for="defaultCheck1">
 								Acepto el consentimiento para tratamiento de datos personales. Acepto el manual de políticas
 								y procedimientos.
@@ -71,7 +71,7 @@ import maintenance_apiHandler, { actions, customer_base_endpoint, category_base_
 import { useRouter } from 'vue-router';
 import { ref, resolveDirective } from 'vue';
 import { onMounted } from 'vue';
-import { generateHTMLContent } from '../utilidades/arcPDF.JS'
+import { generateHTMLContent } from '../utilidades/arcPDF.js'
 import { formatDate } from '../../utilidades/formarDate'
 import styles from '../utilidades/cssPlantilla.css';
 
