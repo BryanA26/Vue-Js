@@ -23,7 +23,7 @@
 						<InputText type="email" inputId="floatingInputGroup1" v-model="pqrs.email" :max="50" placeholder="email" label="Correo electrónico" errormessage="Este campo es obligatorio*" />
 					</div>
 					<div class="my-3">
-						<InputText type="text" inputId="floatingInputGroup1" v-model="pqrs.celphone" :max="10" placeholder="celphone" label="Número de Contacto" errormessage="Este campo es obligatorio*" @input="filterNonNumeric" />
+						<InputText type="text" inputId="floatingInputGroup1" v-model="pqrs.cellphone" :max="10" placeholder="cellphone" label="Número de Contacto" errormessage="Este campo es obligatorio*" @input="filterNonNumeric" />
 					</div>
 					<div class="my-3">
 						<selectS inputId="'floatingSelect'" :selected-value="pqrs.id_area" :label="'Área encargada *'" :options="areaOptions" @update:select-value="pqrs.id_area = $event" :editable="true" />
@@ -74,7 +74,7 @@ const pqrs = ref({
 	document: "",
 	fullname: "",
 	email: "",
-	celphone: "",
+	cellphone: "",
 	id_area: "",
 	description: "",
 })
@@ -144,7 +144,7 @@ const crearcustomer = async () => {
 				fullname: pqrs.value.fullname.toUpperCase(),
 				document_type: pqrs.value.document_type,
 				email: pqrs.value.email,
-				celphone: pqrs.value.celphone,
+				cellphone: pqrs.value.cellphone,
 			};
 
 

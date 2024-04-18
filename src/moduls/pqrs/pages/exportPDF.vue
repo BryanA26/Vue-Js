@@ -78,7 +78,7 @@
 								</span>
 							</div>
 						</th>
-						<td v-if="pqrs.id_customer">{{ pqrs.id_customer.celphone }}</td>
+						<td v-if="pqrs.id_customer">{{ pqrs.id_customer.cellphone }}</td>
 					</tr>
 					<tr>
 						<th class="th_row_icon_spn">
@@ -229,7 +229,7 @@ const pqrs = ref({
 	fullname: "",
 	register_date: "",
 	email: "",
-	celphone: "",
+	cellphone: "",
 	observation: "",
 	id_area: "",
 })

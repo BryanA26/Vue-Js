@@ -20,8 +20,9 @@
 					<div class="my-3">
 						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.fullname" placeholder="nombre" label="Nombres y Apellidos" errormessage="Este campo es obligatorio*" :max="50" />
 					</div>
-					<div class="my-3">
-						<InputText type="text" inputId="floatingInputGroup1" v-model="mantenimiento.cellphone" placeholder="telefono" label="Número de Contacto" errormessage="Este campo es obligatorio*" @input="filterNonNumeric" :max="10" />
+					<div class="form-group">
+						<CountrySelector class="input-field2" type="text" inputId="floatingInputGroup2" v-model="mantenimiento.cellphoneExt" placeholder="extencion" label="Pais o Indicativo" errormessage="Este campo es obligatorio*" :max="10" :autocomplete="true"/>
+						<InputText class="input-field" type="text" inputId="floatingInputGroup2" v-model="mantenimiento.cellphone" placeholder="telefono" label="Número de Contacto" errormessage="Este campo es obligatorio*" @input="filterNonNumeric" :max="10" />
 					</div>
 					<div class="my-3">
 						<InputText type="email" inputId="floatingInputGroup1" v-model="mantenimiento.email" placeholder="email" label="Correo electrónico" errormessage="Este campo es obligatorio*" :max="50" />
@@ -31,7 +32,7 @@
 					</div>
 
 					<div class="my-3">
-						<selectS inputId="'floatingSelect'" :selected-value="mantenimiento.category" :label="'Categoria *'" :options="categoriaOptions" @update:select-value="mantenimiento.category = $event" :editable="!loading" />
+						<selectS inputId="'floatingSelect'" :selected-value="mantenimiento.category" :label="'Categoría *'" :options="categoriaOptions" @update:select-value="mantenimiento.category = $event" :editable="!loading" />
 					</div>
 
 					<div class="container">
@@ -57,6 +58,7 @@ import ContainerText from '../../../components/containerText.vue';
 import InputText from '../../../components/inputText.vue';
 import selectS from '../../../components/select-s.vue';
 import FileInput from '../../../components/inputFile.vue';
+import CountrySelector from '../../../components/contryDatalis.vue';
 import maintenance_apiHandler, { actions, customer_base_endpoint, category_base_endpoint, headquarter_base_endpoint, maintenance_base_endpoint } from '../APIHandler.mantenimientos';
 import { useRouter } from 'vue-router';
 import { ref, resolveDirective } from 'vue';
@@ -77,6 +79,7 @@ const mantenimiento = ref({
 	document: "",
 	fullname: "",
 	cellphone: "",
+	cellphoneExt: "",
 	email: "",
 	address_maintenance: "",
 	category: "",
@@ -136,7 +139,7 @@ onMounted(async () => {
 
 const buscarClienteExistente = async (document, email) => {
 	try {
-		const endpoint = `${customer_base_endpoint}/${actions.getBy}/?document=${document}&email=${email}`;
+		const endpoint = `${customer_base_endpoint}/${actions.getBy}/?document=${document}`;
 		const clienteExistente = await maintenance_apiHandler.getRequest(endpoint);
 
 		return clienteExistente;
@@ -149,8 +152,8 @@ const buscarClienteExistente = async (document, email) => {
 const crearcustomer = async () => {
 	try {
 		// Validar si el cliente ya existe
-		const clienteExistente = await buscarClienteExistente(mantenimiento.value.document, mantenimiento.value.email);
-
+		const clienteExistente = await buscarClienteExistente(mantenimiento.value.document);
+		const cellphone = `${mantenimiento.value.cellphoneExt} ${mantenimiento.value.cellphone}`; // Elimina el símbolo '+'
 		if (clienteExistente) {
 			// El cliente ya existe, retornar su ID
 			return clienteExistente.id;
@@ -161,7 +164,7 @@ const crearcustomer = async () => {
 				fullname: mantenimiento.value.fullname.toUpperCase(),
 				document_type: mantenimiento.value.document_type,
 				email: mantenimiento.value.email,
-				cellphone: mantenimiento.value.cellphone,
+				cellphone: cellphone,
 			};
 
 
@@ -313,3 +316,18 @@ const handleFileChange = async (idMantenimiento) => {
 };
 
 </script>
+<style>
+.form-group {
+	display: flex;
+}
+
+.input-field {
+	margin-right: 10px;
+	flex: 1;
+}
+
+.input-field2 {
+	width: 150px;
+	margin-right: 10px;
+}
+</style>

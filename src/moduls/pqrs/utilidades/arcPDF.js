@@ -140,7 +140,7 @@ export const generateHTMLContent = (pqrs) => {
 							</span>
 						</div>
 					</th>
-					<td>${pqrs.value ? pqrs.value.id_customer.celphone : pqrs.celphone}</td>
+					<td>${pqrs.value ? pqrs.value.id_customer.cellphone : pqrs.cellphone}</td>
 					</tr>
 				<tr>
 					<th>
