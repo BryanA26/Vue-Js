@@ -12,7 +12,7 @@
     "test:commit": "vitest --watch=false",
     "build:portada:local": "vite build --base=/portadainmobiliaria.com --mode=development",
     "build:portada:prod": "vite build --base=/ --mode=production",
-    "prepare": "husky init"
+    "prepare": "husky"
   },
   "dependencies": {
     "@trevoreyre/autocomplete-vue": "2.4.1",
