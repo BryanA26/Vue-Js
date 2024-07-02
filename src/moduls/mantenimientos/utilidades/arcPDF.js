@@ -1,9 +1,18 @@
-
-import { fecha, info, area, nombres, contacto, documento, terminos, email, mensaje, estado} from '../../../components/svg';
-import { maintenance_base_deployed_enpoint } from '../APIHandler.mantenimientos';
+import {
+  fecha,
+  info,
+  area,
+  nombres,
+  contacto,
+  documento,
+  terminos,
+  email,
+  mensaje,
+  estado,
+} from "../../../components/svg"
+import { maintenance_base_deployed_enpoint } from "../APIHandler.mantenimientos"
 export const generateHTMLContent = (mantenimiento) => {
-
-	const htmlWithStyles = `
+  const htmlWithStyles = `
   <html>
 		<head>
 			<div style="margin-top: 20px;">
@@ -21,7 +30,7 @@ export const generateHTMLContent = (mantenimiento) => {
 							<span>
 								FECHA DE REGISTRO
 							</span>
-							<div>${mantenimiento.value ? mantenimiento.value.register_date : mantenimiento.register_date ? mantenimiento.register_date : 'Fecha no disponible'}</div>
+							<div>${mantenimiento.value ? mantenimiento.value.register_date : mantenimiento.register_date ? mantenimiento.register_date : "Fecha no disponible"}</div>
 							</div>
 					</th>
 				</tr>
@@ -137,41 +146,40 @@ export const generateHTMLContent = (mantenimiento) => {
 				<!-- Agrega más filas según sea necesario -->
 	</body>
 	</html>`
-	return htmlWithStyles;
-};
-function getImagenesEnlaces(mantenimiento) {
-	// Verifica si la propiedad 'url_img' existe y es un array
-	if (mantenimiento && mantenimiento.url_img) {
-		let nombresArchivos;
-
-		try {
-			// Intenta analizar la cadena JSON
-			nombresArchivos = JSON.parse(mantenimiento.url_img);
-		} catch (error) {
-			// Si hay un error al analizar, asume que la cadena ya es un array
-			nombresArchivos = mantenimiento.url_img;
-		}
-
-		// Si nombresArchivos es un array, construye las etiquetas de imagen con estilos
-		if (Array.isArray(nombresArchivos)) {
-			const maintenanceId = mantenimiento.id;
-			const imagenes = nombresArchivos.map(nombreArchivo => {
-				// Obtén la extensión del nombre de archivo
-				const extension = nombreArchivo.split('.').pop();
-				// Construye la URL de la imagen utilizando la extensión del archivo
-				const urlImagen = `${maintenance_base_deployed_enpoint}/phpuploadfiles/files/maintenance/${maintenanceId}/${extension}/${nombreArchivo}`;
-				return `<img src=${urlImagen} alt="Imagen" style="max-width: 15%; height: auto; margin-right: 5px; display: inline-block;">`;
-			});
-
-			// Utiliza un div para contener las imágenes y muestra horizontalmente
-			return `<div>${imagenes.join('')}</div>`;
-		} else {
-			// Si no hay imágenes disponibles
-			return '<div>No hay imágenes disponibles</div>';
-		}
-	} else {
-		// Si no hay imágenes disponibles
-		return '<div>No hay imágenes disponibles</div>';
-	}
+  return htmlWithStyles
 }
+function getImagenesEnlaces(mantenimiento) {
+  // Verifica si la propiedad 'url_img' existe y es un array
+  if (mantenimiento && mantenimiento.url_img) {
+    let nombresArchivos
 
+    try {
+      // Intenta analizar la cadena JSON
+      nombresArchivos = JSON.parse(mantenimiento.url_img)
+    } catch (error) {
+      // Si hay un error al analizar, asume que la cadena ya es un array
+      nombresArchivos = mantenimiento.url_img
+    }
+
+    // Si nombresArchivos es un array, construye las etiquetas de imagen con estilos
+    if (Array.isArray(nombresArchivos)) {
+      const maintenanceId = mantenimiento.id
+      const imagenes = nombresArchivos.map((nombreArchivo) => {
+        // Obtén la extensión del nombre de archivo
+        const extension = nombreArchivo.split(".").pop()
+        // Construye la URL de la imagen utilizando la extensión del archivo
+        const urlImagen = `${maintenance_base_deployed_enpoint}/files/maintenance/${maintenanceId}/${extension}/${nombreArchivo}`
+        return `<img src=${urlImagen} alt="Imagen" style="max-width: 15%; height: auto; margin-right: 5px; display: inline-block;">`
+      })
+
+      // Utiliza un div para contener las imágenes y muestra horizontalmente
+      return `<div>${imagenes.join("")}</div>`
+    } else {
+      // Si no hay imágenes disponibles
+      return "<div>No hay imágenes disponibles</div>"
+    }
+  } else {
+    // Si no hay imágenes disponibles
+    return "<div>No hay imágenes disponibles</div>"
+  }
+}
