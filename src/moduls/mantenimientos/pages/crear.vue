@@ -201,6 +201,8 @@ const docOptions = ref([
   { value: "CE", label: "CE" },
   { value: "NIT", label: "NIT" },
   { value: "PAS", label: "PAS" },
+  { value: "PEP", label: "PEP" },
+  { value: "PPT", label: "PPT" },
 ])
 
 const categoriaOptions = ref([])
