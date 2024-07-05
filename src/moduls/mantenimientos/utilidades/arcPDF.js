@@ -11,6 +11,11 @@ import {
   estado,
 } from "../../../components/svg"
 import { maintenance_base_deployed_enpoint } from "../APIHandler.mantenimientos"
+let EmailMessageBody = `Gracias por informarnos sobre la situación que se presenta en su inmueble queremos informarle que hemos recibido su solicitud y entendemos la importancia de resolverlo rápidamente.<br>
+Nuestro equipo de Mantenimiento se pondrá en contacto con usted en breve para asegurar una solución rápida.<br>
+Agradecemos su paciencia y confianza.`
+let EmailMessageFarewel = `Atentamente, `
+let EmailMessageSignature = `Equipo de Mantenimiento de Portada Inmobiliaria.`
 export const generateHTMLContent = (mantenimiento) => {
   const htmlWithStyles = `
   <html>
@@ -18,12 +23,10 @@ export const generateHTMLContent = (mantenimiento) => {
 		<div style="margin-top: 20px;">
 			<div class="img_logo">
 			</div>
-	  		<h3>Formulario Mantenimientos y Reparaciones</h3>
-	  		<p style="text-align: center;">Gracias por informarnos sobre la situación que se presenta en su inmueble queremos informarle que hemos recibido su solicitud y entendemos la importancia de resolverlo rápidamente.<br>
-	  		Nuestro equipo de Mantenimiento se pondrá en contacto con usted en breve para asegurar una solución rápida.<br>
-			Agradecemos su paciencia y confianza.<br><br>
-	  		Atentamente,
-	 		<b>Equipo de Mantenimiento de Portada Inmobiliaria.</b><br><br></p>
+	  		<h3 style = "color:black;">Formulario Mantenimientos y Reparaciones</h3>
+			  <p style="text-align: center; color:black;">
+			  	${EmailMessageBody}<br><br>${EmailMessageFarewel}<b>${EmailMessageSignature}</b><br><br><br>
+			  </p>
 		</div>
 		</head>
 		<body>
