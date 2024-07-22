@@ -113,10 +113,19 @@
               inputId="textArea"
               label="Descripción"
               :rows="3"
-              :maxlength="180"
+              :maxlength="2500"
               @update:textValue="mantenimiento.description = $event"
             />
           </div>
+
+          <div>
+            <counterText
+              :label="'/2500'"
+              inputId="counter_text"
+              :txtValue="mantenimiento.description"
+            />
+          </div>
+
           <div class="my-3">
             <label style="color: rgba(33, 37, 41, 0.75)">Cargar Imagen*</label>
             <FileInput @on-change-file="(eventFiles) => (files = eventFiles)" />
@@ -158,6 +167,7 @@ import InputText from "../../../components/inputText.vue"
 import selectS from "../../../components/select-s.vue"
 import FileInput from "../../../components/inputFile.vue"
 import CountrySelector from "../../../components/contryDatalis.vue"
+import counterText from "../../../components/counterText.vue"
 import maintenance_apiHandler, {
   actions,
   customer_base_endpoint,
