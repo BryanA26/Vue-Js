@@ -152,6 +152,12 @@
               </label>
             </div>
           </div>
+
+          <div
+            id="recaptcha"
+            class="g-recaptcha"
+            data-sitekey="6LcVXfQiAAAAAA8HJFclPvNaY1Ah5CU0o9Lq3qyj"
+          ></div>
           <button type="submit" class="btn btn-primary" :disabled="enviando">
             ENVIAR
           </button>
@@ -160,7 +166,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import ContainerText from "../../../components/containerText.vue"
 import InputText from "../../../components/inputText.vue"
@@ -200,6 +205,7 @@ const mantenimiento = ref({
   description: "",
   url_img: "",
   id_customer: "",
+  "g-recaptcha-response": "",
 })
 const filterNonNumeric = (event) => {
   const input = event.target
@@ -217,6 +223,18 @@ const docOptions = ref([
 
 const categoriaOptions = ref([])
 const reportOptions = ref([])
+
+const loadReCaptchaScript = () => {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script")
+    script.src = "https://www.google.com/recaptcha/api.js"
+    script.setAttribute("async", "")
+    script.setAttribute("defer", "")
+    script.onload = resolve
+    script.onerror = reject
+    document.head.appendChild(script)
+  })
+}
 
 const fetchDataFromAPI = async (url, optionsRef) => {
   try {
@@ -242,6 +260,9 @@ const fetchDataFromAPI = async (url, optionsRef) => {
 
 onMounted(async () => {
   try {
+    // Cargar el script de reCAPTCHA dinámicamente
+    await loadReCaptchaScript()
+
     await Promise.all([
       fetchDataFromAPI(
         headquarter_base_endpoint + actions.getAll,
@@ -380,54 +401,78 @@ const enviarCorreoDesdeCreated = async (idMantenimiento) => {
 const crearMantenimiento = async () => {
   try {
     if (!enviando.value) {
+      const textArea = document.getElementById("g-recaptcha-response").value
+      mantenimiento.value["g-recaptcha-response"] = textArea
+
       enviando.value = true
 
-      const customerId = await crearcustomer()
-      // Generar el radicado
-      const radicado = await maintenance_apiHandler.generateRecord(
-        mantenimiento.value.document,
-      ) // Ajusta el parámetro según corresponda
+      const token = mantenimiento.value["g-recaptcha-response"]
 
-      const datosEnviar = {
-        address_maintenance: mantenimiento.value.address_maintenance,
-        description: mantenimiento.value.description.toUpperCase(),
-        id_headquarter: mantenimiento.value.headquarter,
-        id_category: mantenimiento.value.category,
-        id_customer: { id: customerId },
-        id_status: { id: 3 }, // default status Registrado
-        finalized: false,
-        record: radicado,
-        /**
-         * @todo quitar este valor por defecto, esta aqui temporalmente por motivos de desarrollo
-         * lo usamos porque no veo la necesidad de cambiar el api para suplir la necesidad de tener una compañia por defecto seleccionada.
-         */
-        id_company: { id: 1 }, // default company PORTADA INMOBILIARIA
-      }
-
-      const mantenimientoCreado = await maintenance_apiHandler.fetchPost(
-        datosEnviar,
-        maintenance_base_endpoint + "/" + actions.create,
+      const response = await fetch(
+        "http://10.1.1.8/CRINMO/recaptcha_api/verify-recaptcha.php",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token }),
+        },
       )
 
-      if (!mantenimientoCreado || mantenimientoCreado.id === undefined) {
-        throw new Error(
-          "El nuevo mantenimiento no fue creado correctamente o no tiene un ID válido.",
+      const data = await response.json()
+
+      if (data.success) {
+        const customerId = await crearcustomer()
+        // Generar el radicado
+        const radicado = await maintenance_apiHandler.generateRecord(
+          mantenimiento.value.document,
+        ) // Ajusta el parámetro según corresponda
+
+        const datosEnviar = {
+          address_maintenance: mantenimiento.value.address_maintenance,
+          description: mantenimiento.value.description.toUpperCase(),
+          id_headquarter: mantenimiento.value.headquarter,
+          id_category: mantenimiento.value.category,
+          id_customer: { id: customerId },
+          id_status: { id: 3 }, // default status Registrado
+          finalized: false,
+          record: radicado,
+          /**
+           * @todo quitar este valor por defecto, esta aqui temporalmente por motivos de desarrollo
+           * lo usamos porque no veo la necesidad de cambiar el api para suplir la necesidad de tener una compañia por defecto seleccionada.
+           */
+          id_company: { id: 1 }, // default company PORTADA INMOBILIARIA
+          "g-recaptcha-response": mantenimiento.value["g-recaptcha-response"],
+        }
+
+        const mantenimientoCreado = await maintenance_apiHandler.fetchPost(
+          datosEnviar,
+          maintenance_base_endpoint + "/" + actions.create,
         )
+
+        if (!mantenimientoCreado || mantenimientoCreado.id === undefined) {
+          throw new Error(
+            "El nuevo mantenimiento no fue creado correctamente o no tiene un ID válido.",
+          )
+        }
+
+        const idMantenimiento = mantenimientoCreado.id
+
+        // Esperar a que se complete la carga de la imagen
+        await handleFileChange(idMantenimiento)
+
+        // Llama a la función enviarCorreo después de la carga de la imagen
+        await enviarCorreoDesdeCreated(idMantenimiento)
+
+        // Redirige después de completar todas las operaciones asincrónicas
+        // router.push({
+        // 	name: "ExportarMantenimiento",
+        // 	params: { id: idMantenimiento },
+        // })
+      } else {
+        alert("Recaptcha Error")
+        return
       }
-
-      const idMantenimiento = mantenimientoCreado.id
-
-      // Esperar a que se complete la carga de la imagen
-      await handleFileChange(idMantenimiento)
-
-      // Llama a la función enviarCorreo después de la carga de la imagen
-      await enviarCorreoDesdeCreated(idMantenimiento)
-
-      // Redirige después de completar todas las operaciones asincrónicas
-      router.push({
-        name: "ExportarMantenimiento",
-        params: { id: idMantenimiento },
-      })
     }
   } catch (error) {
     console.error("Error al crear el mantenimiento:", error)
