@@ -402,22 +402,14 @@ const crearMantenimiento = async () => {
   try {
     if (!enviando.value) {
       const textArea = document.getElementById("g-recaptcha-response").value
-      mantenimiento.value["g-recaptcha-response"] = textArea
 
-      enviando.value = true
+      mantenimiento.value["g-recaptcha-response"] = textArea
 
       const token = mantenimiento.value["g-recaptcha-response"]
 
-      const response = await fetch(
-        "http://10.1.1.8/CRINMO/recaptcha_api/verify-recaptcha.php",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token }),
-        },
-      )
+      enviando.value = true
+
+      const response = await maintenance_apiHandler.recaptchaValidation(token)
 
       const data = await response.json()
 
