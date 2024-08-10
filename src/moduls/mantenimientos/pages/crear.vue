@@ -146,10 +146,13 @@
                 id="defaultCheck1"
                 required
               />
-              <label class="form-check-label" for="defaultCheck1">
-                Acepto el consentimiento para tratamiento de datos personales.
-                Acepto el manual de políticas y procedimientos.
-              </label>
+              Acepto el consentimiento para
+              <a
+                href="https://portadainmobiliaria.com/Terminos&Condiciones/Politica_Tratamiento_Datos_Personales.pdf"
+                target="_blank"
+                >tratamiento de datos personales. Acepto el manual de políticas
+                y procedimientos.</a
+              >
             </div>
           </div>
 
