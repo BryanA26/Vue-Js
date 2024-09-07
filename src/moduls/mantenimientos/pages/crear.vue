@@ -460,10 +460,10 @@ const crearMantenimiento = async () => {
         await enviarCorreoDesdeCreated(idMantenimiento)
 
         // Redirige después de completar todas las operaciones asincrónicas
-        // router.push({
-        // 	name: "ExportarMantenimiento",
-        // 	params: { id: idMantenimiento },
-        // })
+        router.push({
+          name: "ExportarMantenimiento",
+          params: { id: idMantenimiento },
+        })
       } else {
         alert("Recaptcha Error")
         return
