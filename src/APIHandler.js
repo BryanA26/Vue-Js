@@ -198,8 +198,7 @@ export default class APIHandler {
   }
 
   async recaptchaValidation(token) {
-    const url =
-      "https://violently-master-wahoo.ngrok-free.app/CRINMO/recaptcha_api/verify-recaptcha.php"
+    const url = "https://exclusivosportada.com/src/verify-recaptcha.php"
 
     const options = {
       method: "POST",
