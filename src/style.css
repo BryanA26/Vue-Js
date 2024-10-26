@@ -1,0 +1,24 @@
+:root {
+	/* font-family: 'Courier New', Courier, monospace; */
+	/* line-height: 1.5; */
+	/* font-weight: 400; */
+
+	/* margin: 0; */
+	/* padding: 0; */
+
+	color-scheme: light dark;
+
+	--color-primary: #f9f9f9;
+	--color-secondary: #f9f9f9;
+	--color-tertiary: #f9f9f9;
+	--color-quaternary: #f9f9f9;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-primary: #f9f9f9;
+		--color-secondary: #f9f9f9;
+		--color-tertiary: #f9f9f9;
+		--color-quaternary: #f9f9f9;
+	}
+}
